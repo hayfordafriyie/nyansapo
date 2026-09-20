@@ -8,7 +8,7 @@ import (
 
 func TestLoadKnowledgeAndAnswer(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "knowledge.json")
-	content := `{"name":"EDSPiKE","country":"Ghana","description":"A platform.","features":["Learning"]}`
+	content := `{"name":"EDSPiKE","country":"Ghana","description":"A platform.","features":["Learning","School management"]}`
 	if err := os.WriteFile(path, []byte(content), 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -24,5 +24,9 @@ func TestLoadKnowledgeAndAnswer(t *testing.T) {
 
 	if got := knowledge.Answer("Tell me about learning"); got != "Learning" {
 		t.Fatalf("Answer() = %q, want %q", got, "Learning")
+	}
+
+	if got := knowledge.Answer("Tell me about school management"); got != "School management" {
+		t.Fatalf("Answer() = %q, want %q", got, "School management")
 	}
 }

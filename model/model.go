@@ -48,26 +48,45 @@ func (k Knowledge) Answer(question string) string {
 }
 
 func (k Knowledge) Search(query []string) string {
-	for _, feature := range k.Features {
-		if hasSharedToken(query, tokenizer.Tokenize(feature)) {
-			return feature
-		}
+	type candidate struct {
+		text  string
+		score int
 	}
 
-	if hasSharedToken(query, tokenizer.Tokenize(k.Description)) {
-		return k.Description
+	candidates := make([]candidate, 0, len(k.Features)+1)
+	for _, feature := range k.Features {
+		candidates = append(candidates, candidate{
+			text:  feature,
+			score: sharedTokenCount(query, tokenizer.Tokenize(feature)),
+		})
+	}
+	candidates = append(candidates, candidate{
+		text:  k.Description,
+		score: sharedTokenCount(query, tokenizer.Tokenize(k.Description)),
+	})
+
+	best := candidate{}
+	for _, current := range candidates {
+		if current.score > best.score {
+			best = current
+		}
+	}
+	if best.score > 0 {
+		return best.text
 	}
 
 	return "I do not know that yet."
 }
 
-func hasSharedToken(left, right []string) bool {
+func sharedTokenCount(left, right []string) int {
+	count := 0
 	for _, leftToken := range left {
 		for _, rightToken := range right {
 			if leftToken == rightToken && len(leftToken) > 2 {
-				return true
+				count++
+				break
 			}
 		}
 	}
-	return false
+	return count
 }
