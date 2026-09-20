@@ -1,0 +1,9 @@
+{
+  "subject": "Statistics",
+  "topics": [
+    "Mean is the sum of values divided by the number of values.",
+    "Median is the middle value after sorting a dataset.",
+    "A sample is a subset used to learn about a population.",
+    "Standard deviation measures how spread out values are."
+  ]
+}
