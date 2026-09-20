@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
@@ -56,17 +57,17 @@ func main() {
 	answer := trained.Answer
 
 	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "evaluate") {
-		result := evaluation.Run(trained, 10)
-		fmt.Printf("queries: %d\nunknown: %d\nempty: %d\nunique answers: %d\n", result.Total, result.Unknown, result.Empty, result.Unique)
+		result := evaluation.Run(trained, evaluationRepetitions(10))
+		fmt.Printf("queries: %d\nunknown: %d\nempty: %d\nungrounded: %d\nunique answers: %d\n", result.Total, result.Unknown, result.Empty, result.Ungrounded, result.Unique)
 		return
 	}
 
 	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "evaluate-api") {
-		result, err := evaluation.RunAPI(http.DefaultClient, "http://localhost:8080/ask", 10)
+		result, err := evaluation.RunAPI(http.DefaultClient, "http://localhost:8080/ask", evaluationRepetitions(10))
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("API queries: %d\nAPI unknown: %d\nAPI empty: %d\nAPI unique answers: %d\n", result.Total, result.Unknown, result.Empty, result.Unique)
+		fmt.Printf("API queries: %d\nAPI unknown: %d\nAPI empty: %d\nAPI ungrounded: %d\nAPI unique answers: %d\n", result.Total, result.Unknown, result.Empty, result.Ungrounded, result.Unique)
 		return
 	}
 
@@ -96,6 +97,17 @@ func main() {
 
 		fmt.Println(answer(question))
 	}
+}
+
+func evaluationRepetitions(defaultValue int) int {
+	if len(os.Args) < 3 {
+		return defaultValue
+	}
+	value, err := strconv.Atoi(os.Args[2])
+	if err != nil || value < 1 {
+		panic("evaluation repetitions must be a positive integer")
+	}
+	return value
 }
 
 func trainFrom(source string) (model.TrainedModel, error) {

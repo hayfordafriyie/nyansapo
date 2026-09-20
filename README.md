@@ -190,21 +190,27 @@ go run . train path\to\my-data
 To add a new format such as Parquet, register a reader in `pipeline/pipeline.go`;
 the model and API layers do not need to change.
 
-Run a single-process 200-query evaluation:
+Run a single-process evaluation:
 
 ```text
 go run . evaluate
 ```
 
-This runs 20 varied subject questions 10 times (200 total), reporting unknown
-answers, empty answers, and unique response count. It measures the current
-retrieval/response system; repeated evaluation does not retrain neural weights.
-
-With the API running in another terminal, run the same 200-query evaluation
-through HTTP:
+This runs 20 varied subject questions 10 times by default. Pass a repetition
+count to choose the total; for example, this runs exactly 500 CLI queries:
 
 ```text
-go run . evaluate-api
+go run . evaluate 25
+```
+
+The report includes unknown, empty, ungrounded, and unique response counts. It
+measures the current retrieval/response system; repeated evaluation does not
+retrain model weights.
+
+With the API running in another terminal, run the same evaluation through HTTP:
+
+```text
+go run . evaluate-api 25
 ```
 
 ## Evidence-based answers

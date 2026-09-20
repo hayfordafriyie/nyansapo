@@ -33,11 +33,12 @@ var Questions = []string{
 }
 
 type Result struct {
-	Total   int
-	Unknown int
-	Empty   int
-	Unique  int
-	Samples []string
+	Total      int
+	Unknown    int
+	Empty      int
+	Ungrounded int
+	Unique     int
+	Samples    []string
 }
 
 func Run(trained model.TrainedModel, repetitions int) Result {
@@ -45,7 +46,8 @@ func Run(trained model.TrainedModel, repetitions int) Result {
 	result := Result{}
 	for run := 0; run < repetitions; run++ {
 		for _, question := range Questions {
-			record(&result, answers, trained.Answer(question))
+			answer := trained.AnswerResult(question)
+			record(&result, answers, answer.Answer, answer.Grounded)
 		}
 	}
 	result.Unique = len(answers)
@@ -71,7 +73,8 @@ func RunAPI(client *http.Client, endpoint string, repetitions int) (Result, erro
 				return Result{}, err
 			}
 			var body struct {
-				Answer string `json:"answer"`
+				Answer   string `json:"answer"`
+				Grounded bool   `json:"grounded"`
 			}
 			decodeErr := json.NewDecoder(response.Body).Decode(&body)
 			response.Body.Close()
@@ -81,20 +84,23 @@ func RunAPI(client *http.Client, endpoint string, repetitions int) (Result, erro
 			if decodeErr != nil {
 				return Result{}, decodeErr
 			}
-			record(&result, answers, body.Answer)
+			record(&result, answers, body.Answer, body.Grounded)
 		}
 	}
 	result.Unique = len(answers)
 	return result, nil
 }
 
-func record(result *Result, answers map[string]struct{}, answer string) {
+func record(result *Result, answers map[string]struct{}, answer string, grounded bool) {
 	result.Total++
 	if answer == "I do not know that yet." {
 		result.Unknown++
 	}
 	if answer == "" {
 		result.Empty++
+	}
+	if !grounded {
+		result.Ungrounded++
 	}
 	answers[answer] = struct{}{}
 	if len(result.Samples) < 5 {

@@ -5,6 +5,7 @@ import (
 	"strings"
 	"unicode"
 
+	"nyansapo/embedding"
 	"nyansapo/tokenizer"
 )
 
@@ -38,7 +39,7 @@ func Format(question, passage string) string {
 	case hasIntent(question, "how"):
 		templates := []string{
 			"The process works like this: %s The evidence describes the key action.",
-			"This happens through a process where %s The evidence describes how it works.",
+			"This works in the following way: %s The evidence describes how it works.",
 			"Step by step, the key idea is that %s These facts show how the process works.",
 		}
 		return strings.Replace(templates[style], "%s", lowerFirst(body), 1)
@@ -120,7 +121,7 @@ func splitSentences(text string) []string {
 	})
 	sentences := make([]string, 0, len(fields))
 	for _, sentence := range fields {
-		if sentence = strings.TrimSpace(sentence); sentence != "" {
+		if sentence = strings.Trim(strings.TrimSpace(sentence), ",;:"); sentence != "" {
 			sentences = append(sentences, sentence+".")
 		}
 	}
@@ -150,7 +151,21 @@ func bestSentences(question string, sentences []string) []string {
 	}
 
 	bestIndex := 0
-	for _, candidate := range scoredSentences[1:] {
+	if len(strings.Fields(scoredSentences[bestIndex].text)) <= 3 && hasLongerSentence(sentences) {
+		for index, candidate := range scoredSentences {
+			if len(strings.Fields(candidate.text)) > 3 {
+				bestIndex = index
+				break
+			}
+		}
+	}
+	for index, candidate := range scoredSentences {
+		if index == 0 {
+			continue
+		}
+		if len(strings.Fields(candidate.text)) <= 3 && hasLongerSentence(sentences) {
+			continue
+		}
 		if candidate.score > scoredSentences[bestIndex].score {
 			bestIndex = candidate.index
 		}
@@ -167,20 +182,19 @@ func bestSentences(question string, sentences []string) []string {
 	return relevant
 }
 
-func relatedSentences(primary, next string) bool {
-	primaryTokens := tokenizer.Tokenize(primary)
-	nextTokens := tokenizer.Tokenize(next)
-	for _, primaryToken := range primaryTokens {
-		if len(primaryToken) <= 2 {
-			continue
-		}
-		for _, nextToken := range nextTokens {
-			if primaryToken == nextToken {
-				return true
-			}
+func hasLongerSentence(sentences []string) bool {
+	for _, sentence := range sentences {
+		if len(strings.Fields(sentence)) > 3 {
+			return true
 		}
 	}
+	return false
+}
 
+func relatedSentences(primary, next string) bool {
+	if embedding.Cosine(embedding.Embed(primary), embedding.Embed(next)) >= 0.2 {
+		return true
+	}
 	primaryLower := strings.ToLower(primary)
 	nextLower := strings.ToLower(next)
 	return strings.Contains(primaryLower, "photosynthesis") &&

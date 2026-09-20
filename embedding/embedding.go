@@ -8,10 +8,21 @@ import (
 
 type Vector map[string]float64
 
+var stopWords = map[string]struct{}{
+	"a": {}, "an": {}, "and": {}, "are": {}, "as": {}, "at": {}, "be": {},
+	"by": {}, "do": {}, "does": {}, "for": {}, "from": {}, "how": {}, "i": {},
+	"in": {}, "is": {}, "it": {}, "of": {}, "on": {}, "or": {}, "that": {},
+	"the": {}, "this": {}, "to": {}, "was": {}, "what": {}, "when": {},
+	"where": {}, "which": {}, "who": {}, "why": {}, "with": {}, "you": {},
+}
+
 func Embed(text string) Vector {
 	vector := make(Vector)
 	for _, token := range tokenizer.Tokenize(text) {
 		if len(token) > 2 {
+			if _, excluded := stopWords[token]; excluded {
+				continue
+			}
 			vector[token]++
 		}
 	}

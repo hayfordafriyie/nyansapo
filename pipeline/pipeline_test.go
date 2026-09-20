@@ -46,3 +46,20 @@ func TestLoadTopicExplanationCSVUsesNaturalExplanation(t *testing.T) {
 		t.Fatalf("documents = %+v, want natural explanation", documents)
 	}
 }
+
+func TestLoadJSONSkipsMetadataLabels(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "math.json")
+	content := `{"subject":"Mathematics","topics":["A fraction represents a part of a whole."]}`
+	if err := os.WriteFile(path, []byte(content), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	documents, err := New().Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(documents) != 1 || documents[0].Text != "Mathematics. A fraction represents a part of a whole." {
+		t.Fatalf("documents = %+v, want subject context with topic", documents)
+	}
+}

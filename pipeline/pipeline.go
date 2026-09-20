@@ -112,7 +112,16 @@ func collectStrings(value any, texts *[]string) {
 			collectStrings(item, texts)
 		}
 	case map[string]any:
-		for _, item := range typed {
+		for key, item := range typed {
+			if strings.ToLower(key) == "subject" {
+				collectStrings(item, texts)
+			}
+		}
+		for key, item := range typed {
+			switch strings.ToLower(key) {
+			case "subject", "name", "title", "topic":
+				continue
+			}
 			collectStrings(item, texts)
 		}
 	}
