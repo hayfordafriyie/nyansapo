@@ -35,7 +35,11 @@ func (k Knowledge) Answer(question string) string {
 	tokens := tokenizer.Tokenize(question)
 	normalized := strings.Join(tokens, " ")
 	switch {
-	case strings.Contains(normalized, "what is") && strings.Contains(normalized, "edspike"):
+	case strings.Contains(normalized, "edspike") &&
+		(strings.Contains(normalized, "what is") ||
+			strings.Contains(normalized, "what does") ||
+			strings.Contains(normalized, "describe") ||
+			strings.Contains(normalized, "platform")):
 		return k.Description
 	case strings.Contains(normalized, "country"):
 		return k.Country

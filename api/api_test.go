@@ -38,6 +38,18 @@ func TestAskRejectsMissingQuestion(t *testing.T) {
 	}
 }
 
+func TestAskRejectsMalformedJSON(t *testing.T) {
+	server := NewServer(model.Knowledge{})
+	request := httptest.NewRequest(http.MethodPost, "/ask", strings.NewReader(`{"question":`))
+	response := httptest.NewRecorder()
+
+	server.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusBadRequest)
+	}
+}
+
 func TestHealth(t *testing.T) {
 	server := NewServer(model.Knowledge{})
 	request := httptest.NewRequest(http.MethodGet, "/health", nil)
