@@ -1,143 +1,166 @@
 {
   "candidates": [
     {
-      "text": "Student management. Teacher management. School management. Learning management. EDSPiKE. Ghana. A school management and learning platform",
+      "text": "# English Language\r\n\r\nEnglish includes reading, writing, speaking, listening, grammar, and vocabulary.\r\nA noun names a person, place, thing, or idea.\r\nA verb expresses an action or state of being.\r\nA paragraph usually develops one main idea with supporting details.",
+      "vector": {
+        "action": 1,
+        "and": 1,
+        "being": 1,
+        "details": 1,
+        "develops": 1,
+        "english": 2,
+        "expresses": 1,
+        "grammar": 1,
+        "idea": 2,
+        "includes": 1,
+        "language": 1,
+        "listening": 1,
+        "main": 1,
+        "names": 1,
+        "noun": 1,
+        "one": 1,
+        "paragraph": 1,
+        "person": 1,
+        "place": 1,
+        "reading": 1,
+        "speaking": 1,
+        "state": 1,
+        "supporting": 1,
+        "thing": 1,
+        "usually": 1,
+        "verb": 1,
+        "vocabulary": 1,
+        "with": 1,
+        "writing": 1
+      }
+    },
+    {
+      "text": "Mathematics. A fraction represents a part of a whole.. The area of a rectangle is length multiplied by width.. The mean is the sum of values divided by the number of values.. A prime number has exactly two positive factors: one and itself.",
       "vector": {
         "and": 1,
-        "edspike": 1,
-        "ghana": 1,
-        "learning": 2,
-        "management": 5,
-        "platform": 1,
-        "school": 2,
-        "student": 1,
-        "teacher": 1
-      }
-    },
-    {
-      "text": "area capability",
-      "vector": {
         "area": 1,
-        "capability": 1
+        "divided": 1,
+        "exactly": 1,
+        "factors": 1,
+        "fraction": 1,
+        "has": 1,
+        "itself": 1,
+        "length": 1,
+        "mathematics": 1,
+        "mean": 1,
+        "multiplied": 1,
+        "number": 2,
+        "one": 1,
+        "part": 1,
+        "positive": 1,
+        "prime": 1,
+        "rectangle": 1,
+        "represents": 1,
+        "sum": 1,
+        "the": 4,
+        "two": 1,
+        "values": 2,
+        "whole": 1,
+        "width": 1
       }
     },
     {
-      "text": "students Student management",
+      "text": "Science studies the natural world through observation, measurement, and experiments.\r\nThe scientific method includes asking a question, forming a hypothesis, testing it,\r\nanalyzing evidence, and communicating results.\r\nPhotosynthesis allows plants to convert light energy into chemical energy.\r\nChlorophyll helps plants absorb light.",
       "vector": {
-        "management": 1,
-        "student": 1,
-        "students": 1
-      }
-    },
-    {
-      "text": "teachers Teacher management",
-      "vector": {
-        "management": 1,
-        "teacher": 1,
-        "teachers": 1
-      }
-    },
-    {
-      "text": "schools School management",
-      "vector": {
-        "management": 1,
-        "school": 1,
-        "schools": 1
-      }
-    },
-    {
-      "text": "learning Learning management",
-      "vector": {
-        "learning": 2,
-        "management": 1
-      }
-    },
-    {
-      "text": "# EDSPiKE\r\n\r\nEDSPiKE is a school management and learning platform based in Ghana.\r\nIt supports student management, teacher management, school management,\r\nand learning management.",
-      "vector": {
-        "and": 2,
-        "based": 1,
-        "edspike": 2,
-        "ghana": 1,
-        "learning": 2,
-        "management": 5,
-        "platform": 1,
-        "school": 2,
-        "student": 1,
-        "supports": 1,
-        "teacher": 1
-      }
-    },
-    {
-      "text": "topic example",
-      "vector": {
-        "example": 1,
-        "topic": 1
-      }
-    },
-    {
-      "text": "observation Measure plant growth each day",
-      "vector": {
-        "day": 1,
-        "each": 1,
-        "growth": 1,
-        "measure": 1,
-        "observation": 1,
-        "plant": 1
-      }
-    },
-    {
-      "text": "hypothesis More light may increase plant growth",
-      "vector": {
-        "growth": 1,
-        "hypothesis": 1,
-        "increase": 1,
-        "light": 1,
-        "may": 1,
-        "more": 1,
-        "plant": 1
-      }
-    },
-    {
-      "text": "evidence Compare results from repeated measurements",
-      "vector": {
-        "compare": 1,
-        "evidence": 1,
-        "from": 1,
-        "measurements": 1,
-        "repeated": 1,
-        "results": 1
-      }
-    },
-    {
-      "text": "Science uses observation, measurement, and experiments to explain the natural world.\r\nThe scientific method includes asking a question, forming a hypothesis, testing it,\r\nanalyzing evidence, and communicating results.",
-      "vector": {
+        "absorb": 1,
+        "allows": 1,
         "analyzing": 1,
         "and": 2,
         "asking": 1,
+        "chemical": 1,
+        "chlorophyll": 1,
         "communicating": 1,
+        "convert": 1,
+        "energy": 2,
         "evidence": 1,
         "experiments": 1,
-        "explain": 1,
         "forming": 1,
+        "helps": 1,
         "hypothesis": 1,
         "includes": 1,
+        "into": 1,
+        "light": 2,
         "measurement": 1,
         "method": 1,
         "natural": 1,
         "observation": 1,
+        "photosynthesis": 1,
+        "plants": 2,
         "question": 1,
         "results": 1,
         "science": 1,
         "scientific": 1,
+        "studies": 1,
         "testing": 1,
         "the": 2,
-        "uses": 1,
+        "through": 1,
         "world": 1
       }
     },
     {
-      "text": "Statistics. Mean is the sum of values divided by the number of values.. Median is the middle value after sorting a dataset.. A sample is a subset used to learn about a population.. Standard deviation measures how spread out values are.",
+      "text": "topic explanation",
+      "vector": {
+        "explanation": 1,
+        "topic": 1
+      }
+    },
+    {
+      "text": "community A community is a group of people who live or work together.",
+      "vector": {
+        "community": 2,
+        "group": 1,
+        "live": 1,
+        "people": 1,
+        "together": 1,
+        "who": 1,
+        "work": 1
+      }
+    },
+    {
+      "text": "government Government makes and applies rules for a society.",
+      "vector": {
+        "and": 1,
+        "applies": 1,
+        "for": 1,
+        "government": 2,
+        "makes": 1,
+        "rules": 1,
+        "society": 1
+      }
+    },
+    {
+      "text": "geography Geography studies places people environments and how they connect.",
+      "vector": {
+        "and": 1,
+        "connect": 1,
+        "environments": 1,
+        "geography": 2,
+        "how": 1,
+        "people": 1,
+        "places": 1,
+        "studies": 1,
+        "they": 1
+      }
+    },
+    {
+      "text": "citizenship Good citizenship includes participation responsibility and respect.",
+      "vector": {
+        "and": 1,
+        "citizenship": 2,
+        "good": 1,
+        "includes": 1,
+        "participation": 1,
+        "respect": 1,
+        "responsibility": 1
+      }
+    },
+    {
+      "text": "Mean is the sum of values divided by the number of values.. Median is the middle value after sorting a dataset.. A sample is a subset used to learn about a population.. Standard deviation measures how spread out values are.. Statistics",
       "vector": {
         "about": 1,
         "after": 1,

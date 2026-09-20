@@ -1,6 +1,6 @@
 # Mini LLM
 
-A small Go knowledge assistant that loads EDSPiKE information from JSON,
+A small Go knowledge assistant that loads subject knowledge from files,
 tokenizes questions, and answers with direct knowledge lookup or vector-
 similarity search. After training, the CLI and API use the same persisted
 model.
@@ -14,9 +14,9 @@ go run .
 Ask questions such as:
 
 ```text
-What is EDSPiKE?
-What country?
-Tell me about learning
+What is photosynthesis?
+What is a prime number?
+What is good citizenship?
 exit
 ```
 
@@ -32,7 +32,7 @@ the server. Invalid or empty model artifacts are rejected at startup.
 Send a question with `POST /ask`:
 
 ```text
-curl -X POST http://localhost:8080/ask -H "Content-Type: application/json" -d "{\"question\":\"What is EDSPiKE?\"}"
+curl -X POST http://localhost:8080/ask -H "Content-Type: application/json" -d "{\"question\":\"What is photosynthesis?\"}"
 ```
 
 Check API health with `GET /health`:
@@ -46,7 +46,7 @@ Open `http://localhost:8080/` in a browser for the chat interface.
 Ask one question without the interactive prompt:
 
 ```text
-go run . ask What is EDSPiKE?
+go run . ask What is photosynthesis?
 ```
 
 Build a persisted retrieval model from all supported files in `data/input`:
@@ -68,15 +68,16 @@ changing the model or API layers.
 `data/input` is the default drop folder. It may start empty; the watcher
 waits until supported files are added.
 
-The repository includes small sample files for testing the pipeline:
-`science.txt`, `statistics.json`, `experiments.csv`, `edspike-overview.md`,
-`edspike-facts.json`, and `edspike-features.csv`. After adding or changing
-data, retrain and test questions such as:
+The repository includes neutral subject files for testing the pipeline:
+`science.txt`, `mathematics.json`, `social-studies.csv`, `english.md`, and
+`statistics.json`. After adding or changing data, retrain and test questions
+such as:
 
 ```text
 go run . train
-go run . ask-trained What is the median?
+go run . ask-trained What is the mean?
 go run . ask-trained What is a hypothesis?
+go run . ask-trained What is good citizenship?
 ```
 
 For automatic retraining whenever supported files are added or changed, run:
