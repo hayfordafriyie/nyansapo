@@ -3,7 +3,7 @@ package embedding
 import (
 	"math"
 
-	"mini-llm/tokenizer"
+	"nyansapo/tokenizer"
 )
 
 type Vector map[string]float64

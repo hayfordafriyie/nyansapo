@@ -4,7 +4,7 @@ import (
 	"crypto/rand"
 	"strings"
 
-	"mini-llm/tokenizer"
+	"nyansapo/tokenizer"
 )
 
 func Format(question, passage string) string {

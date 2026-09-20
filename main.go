@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"mini-llm/evaluation"
-	"mini-llm/model"
-	"mini-llm/pipeline"
+	"nyansapo/evaluation"
+	"nyansapo/model"
+	"nyansapo/pipeline"
 )
 
 func main() {

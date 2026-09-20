@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"mini-llm/api"
+	"nyansapo/api"
 )
 
 func runServer() error {

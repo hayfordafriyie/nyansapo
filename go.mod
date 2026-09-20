@@ -1,3 +1,3 @@
-module mini-llm
+module nyansapo
 
 go 1.23

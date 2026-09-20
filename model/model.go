@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"mini-llm/embedding"
-	"mini-llm/tokenizer"
+	"nyansapo/embedding"
+	"nyansapo/tokenizer"
 )
 
 type Knowledge struct {

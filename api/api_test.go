@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"mini-llm/model"
+	"nyansapo/model"
 )
 
 func TestAsk(t *testing.T) {
@@ -102,7 +102,7 @@ func TestChatPage(t *testing.T) {
 	if response.Header().Get("Content-Type") != "text/html; charset=utf-8" {
 		t.Fatalf("content type = %q, want HTML", response.Header().Get("Content-Type"))
 	}
-	if !strings.Contains(response.Body.String(), "EDSPiKE Assistant") {
+	if !strings.Contains(response.Body.String(), "Nyansapo") {
 		t.Fatalf("response does not contain chat page title")
 	}
 }

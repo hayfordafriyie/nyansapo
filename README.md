@@ -1,6 +1,6 @@
-# Mini LLM
+# Nyansapo
 
-A small Go knowledge assistant that loads subject knowledge from files,
+Nyansapo is a small Go knowledge assistant that loads subject knowledge from files,
 tokenizes questions, and answers with direct knowledge lookup or vector-
 similarity search. After training, the CLI and API use the same persisted
 model.

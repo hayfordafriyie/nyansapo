@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"mini-llm/model"
+	"nyansapo/model"
 )
 
 type Server struct {
@@ -111,7 +111,7 @@ const chatPage = `<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EDSPiKE Assistant</title>
+  <title>Nyansapo</title>
   <style>
     body { font: 16px system-ui, sans-serif; max-width: 42rem; margin: 3rem auto; padding: 0 1rem; }
     form { display: flex; gap: .5rem; }
@@ -121,7 +121,7 @@ const chatPage = `<!doctype html>
   </style>
 </head>
 <body>
-  <h1>EDSPiKE Assistant</h1>
+  <h1>Nyansapo</h1>
   <form id="ask-form">
     <input id="question" placeholder="Ask a question" autocomplete="off" required>
     <button>Ask</button>

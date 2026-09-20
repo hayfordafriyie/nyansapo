@@ -3,7 +3,7 @@ package chat
 import (
 	"strings"
 
-	"mini-llm/tokenizer"
+	"nyansapo/tokenizer"
 )
 
 type Knowledge struct {

@@ -6,8 +6,8 @@ import (
 	"os"
 	"strings"
 
-	"mini-llm/embedding"
-	"mini-llm/response"
+	"nyansapo/embedding"
+	"nyansapo/response"
 )
 
 type trainedCandidate struct {

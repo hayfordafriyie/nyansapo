@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"mini-llm/model"
+	"nyansapo/model"
 )
 
 var Questions = []string{

@@ -3,7 +3,7 @@ package evaluation
 import (
 	"testing"
 
-	"mini-llm/model"
+	"nyansapo/model"
 )
 
 func TestRunCountsQueries(t *testing.T) {

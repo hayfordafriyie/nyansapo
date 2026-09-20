@@ -4,8 +4,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"mini-llm/api"
-	"mini-llm/model"
+	"nyansapo/api"
+	"nyansapo/model"
 )
 
 func TestRunAPI(t *testing.T) {
