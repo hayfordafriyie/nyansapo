@@ -97,3 +97,78 @@ go run . ask-trained Tell me about school management
 
 If `data/model.json` is not present, the regular CLI commands use the source
 knowledge directly. Run `go run . train` to enable persisted-model inference.
+
+## Add data and test training
+
+1. Add a supported file under `data/input`:
+
+   ```text
+   data/input/biology.txt
+   data/input/biology.json
+   data/input/biology.csv
+   data/input/biology.md
+   ```
+
+   Plain text and Markdown files become one document. JSON content is combined
+   into one contextual document. CSV rows become searchable documents.
+
+2. Put useful facts in the file. For example, `data/input/biology.txt`:
+
+   ```text
+   Photosynthesis allows plants to convert light energy into chemical energy.
+   Chlorophyll helps plants absorb light.
+   ```
+
+3. Train the model from all files:
+
+   ```text
+   go run . train
+   ```
+
+   This scans `data/input` recursively and writes the trained artifact to:
+
+   ```text
+   data/model.json
+   ```
+
+4. Test the newly trained model:
+
+   ```text
+   go run . ask-trained What is photosynthesis?
+   go run . ask-trained What helps plants absorb light?
+   ```
+
+   The answer should contain the matching biology text. You can also test
+   interactively:
+
+   ```text
+   go run .
+   ```
+
+5. Start the API and test the same model over HTTP:
+
+   ```text
+   go run . serve
+   curl -X POST http://localhost:8080/ask `
+     -H "Content-Type: application/json" `
+     -d "{\"question\":\"What is photosynthesis?\"}"
+   ```
+
+6. During development, automatically retrain when files are added or changed:
+
+   ```text
+   go run . watch data/input
+   ```
+
+   Keep the API running in another terminal. It reloads `data/model.json` for
+   each question, so newly trained content becomes available without restarting
+   the API.
+
+To use another data directory for a one-time training run:
+
+```text
+go run . train path\to\my-data
+```
+
+To add a new format such as Parquet, register a reader in `pipeline/pipeline.go`;
+the model and API layers do not need to change.
