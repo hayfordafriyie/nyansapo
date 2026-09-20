@@ -48,3 +48,9 @@ Build a persisted retrieval model from the knowledge file:
 ```text
 go run . train
 ```
+
+Ask the persisted model directly:
+
+```text
+go run . ask-trained Tell me about school management
+```

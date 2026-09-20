@@ -30,6 +30,15 @@ func main() {
 		return
 	}
 
+	if len(os.Args) > 2 && strings.EqualFold(os.Args[1], "ask-trained") {
+		trained, err := model.LoadTrained("data/model.json")
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(trained.Answer(strings.Join(os.Args[2:], " ")))
+		return
+	}
+
 	if len(os.Args) > 2 && strings.EqualFold(os.Args[1], "ask") {
 		fmt.Println(knowledge.Answer(strings.Join(os.Args[2:], " ")))
 		return
