@@ -12,6 +12,7 @@ func TestTrainSaveLoadAndAnswer(t *testing.T) {
 		Description: "A platform.",
 		Features:    []string{"School management", "Learning management"},
 	}
+
 	trained := Train(knowledge)
 	path := filepath.Join(t.TempDir(), "model.json")
 	if err := trained.Save(path); err != nil {
@@ -27,5 +28,11 @@ func TestTrainSaveLoadAndAnswer(t *testing.T) {
 	}
 	if got := loaded.Answer("What country?"); got != "Ghana" {
 		t.Fatalf("Answer() = %q, want %q", got, "Ghana")
+	}
+}
+
+func TestValidateRejectsEmptyModel(t *testing.T) {
+	if err := (TrainedModel{}).Validate(); err == nil {
+		t.Fatal("Validate() accepted an empty model")
 	}
 }

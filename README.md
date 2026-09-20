@@ -27,7 +27,7 @@ go run . serve
 ```
 
 The API loads `data/model.json`, so run `go run . train` once before starting
-the server.
+the server. Invalid or empty model artifacts are rejected at startup.
 
 Send a question with `POST /ask`:
 

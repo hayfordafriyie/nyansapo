@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"mini-llm/embedding"
 )
@@ -50,7 +51,25 @@ func LoadTrained(path string) (TrainedModel, error) {
 	if err := json.Unmarshal(data, &model); err != nil {
 		return TrainedModel{}, fmt.Errorf("parse trained model: %w", err)
 	}
+	if err := model.Validate(); err != nil {
+		return TrainedModel{}, fmt.Errorf("validate trained model: %w", err)
+	}
 	return model, nil
+}
+
+func (m TrainedModel) Validate() error {
+	if strings.TrimSpace(m.Knowledge.Name) == "" {
+		return fmt.Errorf("knowledge name is required")
+	}
+	if len(m.Candidates) == 0 {
+		return fmt.Errorf("at least one candidate is required")
+	}
+	for index, candidate := range m.Candidates {
+		if strings.TrimSpace(candidate.Text) == "" || len(candidate.Vector) == 0 {
+			return fmt.Errorf("candidate %d is empty", index)
+		}
+	}
+	return nil
 }
 
 func (m TrainedModel) Answer(question string) string {
