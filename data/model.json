@@ -1,33 +1,15 @@
 {
   "candidates": [
     {
-      "text": "organization",
-      "vector": {
-        "organization": 1
-      }
-    },
-    {
       "text": "EDSPiKE",
       "vector": {
         "edspike": 1
       }
     },
     {
-      "text": "country",
-      "vector": {
-        "country": 1
-      }
-    },
-    {
       "text": "Ghana",
       "vector": {
         "ghana": 1
-      }
-    },
-    {
-      "text": "description",
-      "vector": {
-        "description": 1
       }
     },
     {
@@ -38,12 +20,6 @@
         "management": 1,
         "platform": 1,
         "school": 1
-      }
-    },
-    {
-      "text": "services",
-      "vector": {
-        "services": 1
       }
     },
     {
@@ -197,21 +173,9 @@
       }
     },
     {
-      "text": "subject",
-      "vector": {
-        "subject": 1
-      }
-    },
-    {
       "text": "Statistics",
       "vector": {
         "statistics": 1
-      }
-    },
-    {
-      "text": "topics",
-      "vector": {
-        "topics": 1
       }
     },
     {

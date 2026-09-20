@@ -109,8 +109,7 @@ func collectStrings(value any, texts *[]string) {
 			collectStrings(item, texts)
 		}
 	case map[string]any:
-		for key, item := range typed {
-			*texts = append(*texts, key)
+		for _, item := range typed {
 			collectStrings(item, texts)
 		}
 	}
