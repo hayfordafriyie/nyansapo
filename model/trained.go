@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"mini-llm/embedding"
+	"mini-llm/response"
 )
 
 type trainedCandidate struct {
@@ -80,7 +81,7 @@ func (m TrainedModel) Validate() error {
 func (m TrainedModel) Answer(question string) string {
 	if answer := m.Knowledge.Answer(question); strings.TrimSpace(answer) != "" &&
 		answer != "I do not know that yet." {
-		return answer
+		return response.Format(question, answer)
 	}
 
 	query := embedding.Embed(question)
@@ -96,5 +97,5 @@ func (m TrainedModel) Answer(question string) string {
 	if bestScore == 0 {
 		return "I do not know that yet."
 	}
-	return best
+	return response.Format(question, best)
 }
