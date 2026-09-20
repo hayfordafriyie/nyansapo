@@ -3,12 +3,15 @@ package pipeline
 import (
 	"encoding/csv"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+var ErrNoDocuments = errors.New("no supported documents")
 
 type Document struct {
 	Source string
@@ -60,7 +63,7 @@ func (p *Pipeline) Load(root string) ([]Document, error) {
 		return nil, fmt.Errorf("load documents: %w", err)
 	}
 	if len(documents) == 0 {
-		return nil, fmt.Errorf("no supported documents found in %s", root)
+		return nil, fmt.Errorf("%w found in %s", ErrNoDocuments, root)
 	}
 	return documents, nil
 }

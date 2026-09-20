@@ -65,6 +65,9 @@ go run . train path/to/new-data
 Add new reader adapters in `pipeline/` for formats such as Parquet without
 changing the model or API layers.
 
+`data/input` is the default drop folder. It may start empty; the watcher
+waits until supported files are added.
+
 For automatic retraining whenever supported files are added or changed, run:
 
 ```text

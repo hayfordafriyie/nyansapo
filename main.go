@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -101,6 +102,9 @@ func trainFrom(source string, knowledge model.Knowledge) (model.TrainedModel, er
 	if _, err := os.Stat(source); err == nil {
 		documents, err := pipeline.New().Load(source)
 		if err != nil {
+			if errors.Is(err, pipeline.ErrNoDocuments) && knowledge.Name != "" {
+				return model.Train(knowledge), nil
+			}
 			return model.TrainedModel{}, err
 		}
 		texts := make([]string, 0, len(documents))
@@ -131,6 +135,10 @@ func watchTraining(source string) error {
 			return err
 		}
 		if fingerprint != previous {
+			if fingerprint == "" {
+				time.Sleep(5 * time.Second)
+				continue
+			}
 			trained, err := trainFrom(source, knowledge)
 			if err != nil {
 				return err
