@@ -1,171 +1,276 @@
 {
   "candidates": [
     {
-      "text": "# English Language\r\n\r\nEnglish includes reading, writing, speaking, listening, grammar, and vocabulary.\r\nA noun names a person, place, thing, or idea.\r\nA verb expresses an action or state of being.\r\nA paragraph usually develops one main idea with supporting details.",
+      "text": "The customers table has id, email, and created_at columns. customers.id is the primary key.",
       "vector": {
-        "action": 1,
-        "being": 1,
-        "details": 1,
-        "develops": 1,
-        "english": 2,
-        "expresses": 1,
-        "grammar": 1,
-        "idea": 2,
-        "includes": 1,
-        "language": 1,
-        "listening": 1,
-        "main": 1,
-        "names": 1,
-        "noun": 1,
-        "one": 1,
-        "paragraph": 1,
-        "person": 1,
-        "place": 1,
-        "reading": 1,
-        "speaking": 1,
-        "state": 1,
-        "supporting": 1,
-        "thing": 1,
-        "usually": 1,
-        "verb": 1,
-        "vocabulary": 1,
-        "writing": 1
-      }
-    },
-    {
-      "text": "Mathematics. A fraction represents a part of a whole.. The area of a rectangle is length multiplied by width.. The mean is the sum of values divided by the number of values.. A prime number has exactly two positive factors: one and itself.",
-      "vector": {
-        "area": 1,
-        "divided": 1,
-        "exactly": 1,
-        "factors": 1,
-        "fraction": 1,
+        "columns": 1,
+        "created": 1,
+        "customers": 2,
+        "email": 1,
         "has": 1,
-        "itself": 1,
-        "length": 1,
-        "mathematics": 1,
-        "mean": 1,
-        "multiplied": 1,
-        "number": 2,
-        "one": 1,
-        "part": 1,
-        "positive": 1,
-        "prime": 1,
-        "rectangle": 1,
-        "represents": 1,
-        "sum": 1,
-        "two": 1,
-        "values": 2,
-        "whole": 1,
-        "width": 1
+        "key": 1,
+        "primary": 1,
+        "table": 1
       }
     },
     {
-      "text": "Science studies the natural world through observation, measurement, and experiments.\r\nThe scientific method includes asking a question, forming a hypothesis, testing it,\r\nanalyzing evidence, and communicating results.\r\nPhotosynthesis allows plants to convert light energy into chemical energy.\r\nChlorophyll helps plants absorb light.",
+      "text": "The orders table has id, customer_id, total_amount, and created_at columns. orders.id is the primary key.",
       "vector": {
-        "absorb": 1,
-        "allows": 1,
-        "analyzing": 1,
-        "asking": 1,
-        "chemical": 1,
-        "chlorophyll": 1,
-        "communicating": 1,
-        "convert": 1,
-        "energy": 2,
-        "evidence": 1,
-        "experiments": 1,
-        "forming": 1,
-        "helps": 1,
-        "hypothesis": 1,
-        "includes": 1,
+        "amount": 1,
+        "columns": 1,
+        "created": 1,
+        "customer": 1,
+        "has": 1,
+        "key": 1,
+        "orders": 2,
+        "primary": 1,
+        "table": 1,
+        "total": 1
+      }
+    },
+    {
+      "text": "The orders table joins customers using orders.customer_id = customers.id.",
+      "vector": {
+        "customer": 1,
+        "customers": 2,
+        "joins": 1,
+        "orders": 2,
+        "table": 1,
+        "using": 1
+      }
+    },
+    {
+      "text": "SELECT joins tables by matching related columns, such as customers.id = orders.customer_id.",
+      "vector": {
+        "columns": 1,
+        "customer": 1,
+        "customers": 1,
+        "joins": 1,
+        "matching": 1,
+        "orders": 1,
+        "related": 1,
+        "select": 1,
+        "such": 1,
+        "tables": 1
+      }
+    },
+    {
+      "text": "GROUP BY aggregates rows into groups and aggregate functions such as COUNT and SUM calculate values per group.",
+      "vector": {
+        "aggregate": 1,
+        "aggregates": 1,
+        "calculate": 1,
+        "count": 1,
+        "functions": 1,
+        "group": 2,
+        "groups": 1,
         "into": 1,
-        "light": 2,
-        "measurement": 1,
-        "method": 1,
-        "natural": 1,
-        "observation": 1,
-        "photosynthesis": 1,
-        "plants": 2,
-        "question": 1,
-        "results": 1,
-        "science": 1,
-        "scientific": 1,
-        "studies": 1,
-        "testing": 1,
-        "through": 1,
-        "world": 1
+        "per": 1,
+        "rows": 1,
+        "such": 1,
+        "sum": 1,
+        "values": 1
       }
     },
     {
-      "text": "A community is a group of people who live or work together.",
+      "text": "Window functions calculate across related rows without collapsing the result, for example ROW_NUMBER and SUM OVER.",
       "vector": {
-        "community": 1,
-        "group": 1,
-        "live": 1,
-        "people": 1,
-        "together": 1,
-        "work": 1
+        "across": 1,
+        "calculate": 1,
+        "collapsing": 1,
+        "example": 1,
+        "functions": 1,
+        "number": 1,
+        "over": 1,
+        "related": 1,
+        "result": 1,
+        "row": 1,
+        "rows": 1,
+        "sum": 1,
+        "window": 1,
+        "without": 1
       }
     },
     {
-      "text": "Government makes and applies rules for a society.",
+      "text": "Common table expressions use WITH to define a reusable query before the main SELECT.",
       "vector": {
-        "applies": 1,
-        "government": 1,
-        "makes": 1,
-        "rules": 1,
-        "society": 1
+        "before": 1,
+        "common": 1,
+        "define": 1,
+        "expressions": 1,
+        "main": 1,
+        "query": 1,
+        "reusable": 1,
+        "select": 1,
+        "table": 1,
+        "use": 1
       }
     },
     {
-      "text": "Geography studies places people environments and how they connect.",
+      "text": "Use EXPLAIN to inspect a query plan before running an expensive read-only query.",
       "vector": {
-        "connect": 1,
-        "environments": 1,
-        "geography": 1,
-        "people": 1,
-        "places": 1,
-        "studies": 1,
-        "they": 1
+        "before": 1,
+        "expensive": 1,
+        "explain": 1,
+        "inspect": 1,
+        "only": 1,
+        "plan": 1,
+        "query": 2,
+        "read": 1,
+        "running": 1,
+        "use": 1
       }
     },
     {
-      "text": "Good citizenship includes participation, responsibility, and respect.",
+      "text": "A primary key uniquely identifies each row in a table.",
       "vector": {
-        "citizenship": 1,
-        "good": 1,
-        "includes": 1,
-        "participation": 1,
-        "respect": 1,
-        "responsibility": 1
+        "each": 1,
+        "identifies": 1,
+        "key": 1,
+        "primary": 1,
+        "row": 1,
+        "table": 1,
+        "uniquely": 1
       }
     },
     {
-      "text": "Statistics. Mean is the sum of values divided by the number of values.. Median is the middle value after sorting a dataset.. A sample is a subset used to learn about a population.. Standard deviation measures how spread out values are.",
+      "text": "A foreign key references a key in another table and represents a relationship.",
+      "vector": {
+        "another": 1,
+        "foreign": 1,
+        "key": 2,
+        "references": 1,
+        "relationship": 1,
+        "represents": 1,
+        "table": 1
+      }
+    },
+    {
+      "text": "An index speeds up selected lookups by maintaining an access structure for columns.",
+      "vector": {
+        "access": 1,
+        "columns": 1,
+        "index": 1,
+        "lookups": 1,
+        "maintaining": 1,
+        "selected": 1,
+        "speeds": 1,
+        "structure": 1
+      }
+    },
+    {
+      "text": "The information_schema contains portable metadata about tables, columns, and constraints.",
       "vector": {
         "about": 1,
-        "after": 1,
-        "dataset": 1,
-        "deviation": 1,
-        "divided": 1,
-        "learn": 1,
-        "mean": 1,
-        "measures": 1,
-        "median": 1,
-        "middle": 1,
-        "number": 1,
-        "out": 1,
-        "population": 1,
-        "sample": 1,
-        "sorting": 1,
-        "spread": 1,
-        "standard": 1,
-        "statistics": 1,
-        "subset": 1,
+        "columns": 1,
+        "constraints": 1,
+        "contains": 1,
+        "information": 1,
+        "metadata": 1,
+        "portable": 1,
+        "schema": 1,
+        "tables": 1
+      }
+    },
+    {
+      "text": "Database normalization organizes data into related tables to reduce duplication.",
+      "vector": {
+        "data": 1,
+        "database": 1,
+        "duplication": 1,
+        "into": 1,
+        "normalization": 1,
+        "organizes": 1,
+        "reduce": 1,
+        "related": 1,
+        "tables": 1
+      }
+    },
+    {
+      "text": "Aggregation summarizes rows with functions such as COUNT, SUM, AVG, MIN, and MAX.",
+      "vector": {
+        "aggregation": 1,
+        "avg": 1,
+        "count": 1,
+        "functions": 1,
+        "max": 1,
+        "min": 1,
+        "rows": 1,
+        "such": 1,
         "sum": 1,
-        "used": 1,
-        "value": 1,
-        "values": 3
+        "summarizes": 1
+      }
+    },
+    {
+      "text": "A read-only query retrieves or explains data without changing database state.",
+      "vector": {
+        "changing": 1,
+        "data": 1,
+        "database": 1,
+        "explains": 1,
+        "only": 1,
+        "query": 1,
+        "read": 1,
+        "retrieves": 1,
+        "state": 1,
+        "without": 1
+      }
+    },
+    {
+      "text": "MySQL supports information_schema metadata and EXPLAIN query plans.",
+      "vector": {
+        "explain": 1,
+        "information": 1,
+        "metadata": 1,
+        "mysql": 1,
+        "plans": 1,
+        "query": 1,
+        "schema": 1,
+        "supports": 1
+      }
+    },
+    {
+      "text": "PostgreSQL supports schemas, CTEs, window functions, JSONB, indexes, and EXPLAIN ANALYZE.",
+      "vector": {
+        "analyze": 1,
+        "ctes": 1,
+        "explain": 1,
+        "functions": 1,
+        "indexes": 1,
+        "jsonb": 1,
+        "postgresql": 1,
+        "schemas": 1,
+        "supports": 1,
+        "window": 1
+      }
+    },
+    {
+      "text": "MongoDB stores collections and nested document fields and supports aggregation pipelines.",
+      "vector": {
+        "aggregation": 1,
+        "collections": 1,
+        "document": 1,
+        "fields": 1,
+        "mongodb": 1,
+        "nested": 1,
+        "pipelines": 1,
+        "stores": 1,
+        "supports": 1
+      }
+    },
+    {
+      "text": "Cassandra stores partitioned tables and requires partition-aware queries using partition keys.",
+      "vector": {
+        "aware": 1,
+        "cassandra": 1,
+        "keys": 1,
+        "partition": 2,
+        "partitioned": 1,
+        "queries": 1,
+        "requires": 1,
+        "stores": 1,
+        "tables": 1,
+        "using": 1
       }
     }
   ],

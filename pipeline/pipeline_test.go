@@ -63,3 +63,20 @@ func TestLoadJSONSkipsMetadataLabels(t *testing.T) {
 		t.Fatalf("documents = %+v, want subject context with topic", documents)
 	}
 }
+
+func TestLoadJSONArrayCreatesSearchableDocuments(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "catalog.json")
+	content := `["customers has an id column", "orders has a total column"]`
+	if err := os.WriteFile(path, []byte(content), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	documents, err := New().Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(documents) != 2 {
+		t.Fatalf("got %d documents, want one per catalog entry", len(documents))
+	}
+}

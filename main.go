@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -10,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"nyansapo/database"
 	"nyansapo/evaluation"
 	"nyansapo/model"
 	"nyansapo/pipeline"
@@ -47,6 +49,37 @@ func main() {
 			panic(err)
 		}
 		fmt.Printf("trained %d documents from %s; model saved to data/model.json\n", len(trained.Candidates), source)
+		return
+	}
+
+	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "db-config") {
+		config, err := database.LoadConfig()
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("provider: %s\ndatabase: %s\nuser: %s\nendpoint: %s\nread-only: %t\npassword configured: %t\n",
+			config.Provider, config.Database, config.User, config.Safe().Endpoint, config.ReadOnly, config.Safe().HasPassword)
+		return
+	}
+
+	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "db-introspect") {
+		config, err := database.LoadConfig()
+		if err != nil {
+			panic(err)
+		}
+		catalog, err := database.IntrospectConfigured(context.Background(), config)
+		if err != nil {
+			panic(err)
+		}
+		output := "data/input/live-database.json"
+		if len(os.Args) > 2 {
+			output = os.Args[2]
+		}
+		if err := database.SaveCatalog(output, catalog); err != nil {
+			panic(err)
+		}
+		fmt.Printf("introspected %d tables and %d collections; catalog saved to %s\n",
+			len(catalog.Tables), len(catalog.Collections), output)
 		return
 	}
 

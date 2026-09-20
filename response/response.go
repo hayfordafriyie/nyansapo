@@ -109,16 +109,36 @@ func hasIntent(question, intent string) bool {
 }
 
 func lowerFirst(text string) string {
-	for index, r := range text {
-		return string(unicode.ToLower(r)) + text[index+len(string(r)):]
+	runes := []rune(text)
+	for index, r := range runes {
+		if index == 0 && len(runes) > 1 && unicode.IsUpper(r) && unicode.IsUpper(runes[1]) {
+			return text
+		}
+		return string(unicode.ToLower(r)) + string(runes[index+1:])
 	}
 	return text
 }
 
 func splitSentences(text string) []string {
-	fields := strings.FieldsFunc(text, func(r rune) bool {
-		return r == '.' || r == '!' || r == '?' || r == '\n'
-	})
+	var fields []string
+	var builder strings.Builder
+	runes := []rune(text)
+	for index, character := range runes {
+		isDotInsideToken := character == '.' && index > 0 && index+1 < len(runes) &&
+			(unicode.IsLetter(runes[index-1]) || unicode.IsNumber(runes[index-1])) &&
+			(unicode.IsLetter(runes[index+1]) || unicode.IsNumber(runes[index+1]))
+		if (character == '.' || character == '!' || character == '?' || character == '\n') && !isDotInsideToken {
+			if value := strings.TrimSpace(builder.String()); value != "" {
+				fields = append(fields, value)
+			}
+			builder.Reset()
+			continue
+		}
+		builder.WriteRune(character)
+	}
+	if value := strings.TrimSpace(builder.String()); value != "" {
+		fields = append(fields, value)
+	}
 	sentences := make([]string, 0, len(fields))
 	for _, sentence := range fields {
 		if sentence = strings.Trim(strings.TrimSpace(sentence), ",;:"); sentence != "" {

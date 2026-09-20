@@ -83,3 +83,16 @@ func TestFormatExplainsShortWhyAnswer(t *testing.T) {
 		t.Fatalf("Format() did not explain why: %q", got)
 	}
 }
+
+func TestFormatPreservesDatabaseAcronyms(t *testing.T) {
+	got := Format(
+		"How are orders related?",
+		"SELECT joins customers to orders using customers.id = orders.id.",
+	)
+	if strings.Contains(got, "sELECT") {
+		t.Fatalf("Format() corrupted SQL acronym: %q", got)
+	}
+	if !strings.Contains(got, "SELECT") {
+		t.Fatalf("Format() removed SQL acronym: %q", got)
+	}
+}

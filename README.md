@@ -1,9 +1,10 @@
 # Nyansapo
 
-Nyansapo is a small Go knowledge assistant that loads subject knowledge from files,
-tokenizes questions, and answers with direct knowledge lookup or vector-
-similarity search. After training, the CLI and API use the same persisted
-model.
+Nyansapo is a database-aware Go knowledge assistant. It can train a searchable
+catalog from database schemas and documentation, then answer questions about
+tables, columns, relationships, joins, indexes, and database operations. The
+current model is retrieval-based; it does not silently mutate a database or
+invent a query result.
 
 Run it from the project root:
 
@@ -14,9 +15,10 @@ go run .
 Ask questions such as:
 
 ```text
-What is photosynthesis?
-What is a prime number?
-What is good citizenship?
+Which tables contain customer orders?
+How are orders related to customers?
+What columns should I use to join customers and orders?
+How does a PostgreSQL window function work?
 exit
 ```
 
@@ -32,14 +34,14 @@ the server. Invalid or empty model artifacts are rejected at startup.
 Send a question with `POST /ask`:
 
 ```text
-curl -X POST http://localhost:8080/ask -H "Content-Type: application/json" -d "{\"question\":\"What is photosynthesis?\"}"
+curl -X POST http://localhost:8080/ask -H "Content-Type: application/json" -d "{\"question\":\"How are orders related to customers?\"}"
 ```
 
 Responses include the answer's retrieval confidence and whether the answer was
 grounded in matching training evidence:
 
 ```json
-{"answer":"Put simply: Photosynthesis converts light energy into chemical energy.","confidence":0.42,"grounded":true}
+{"answer":"Orders are related to customers through orders.customer_id and customers.id.","confidence":0.42,"grounded":true}
 ```
 
 When the question has no sufficiently related evidence, Nyansapo returns
@@ -57,7 +59,7 @@ Open `http://localhost:8080/` in a browser for the chat interface.
 Ask one question without the interactive prompt:
 
 ```text
-go run . ask What is photosynthesis?
+go run . ask How are orders related to customers?
 ```
 
 Build a persisted retrieval model from all supported files in `data/input`:
@@ -67,7 +69,8 @@ go run . train
 ```
 
 The pipeline currently reads `.txt`, `.md`, `.json`, and `.csv` files
-recursively. You can provide another directory:
+recursively. Database catalogs can be exported as JSON and trained the same
+way. You can provide another directory:
 
 ```text
 go run . train path/to/new-data
@@ -79,17 +82,54 @@ changing the model or API layers.
 `data/input` is the default drop folder. It may start empty; the watcher
 waits until supported files are added.
 
-The repository includes neutral subject files for testing the pipeline:
-`science.txt`, `mathematics.json`, `social-studies.csv`, `english.md`, and
-`statistics.json`. After adding or changing data, retrain and test questions
-such as:
+The repository includes a database catalog fixture at
+`data/input/database-catalog.json`. After adding or changing database metadata,
+retrain and test questions such as:
 
 ```text
 go run . train
-go run . ask-trained What is the mean?
-go run . ask-trained What is a hypothesis?
-go run . ask-trained What is good citizenship?
+go run . ask-trained How are orders related to customers?
+go run . ask-trained What is a window function?
 ```
+
+## Database connection configuration
+
+Credentials are never committed to the repository. Copy `.env.example` to
+`.env`, fill in only the variables needed by your provider, and keep `.env`
+untracked. Existing environment variables take precedence over `.env`.
+
+Supported provider names are `mysql`, `postgres`, `mongodb`, and `cassandra`.
+The configuration accepts either `NYANSAPO_DB_URL` or separate provider fields
+such as host, port, user, password, and database. `NYANSAPO_DB_READ_ONLY`
+defaults to `true`.
+
+Check the resolved configuration without printing the password:
+
+```text
+go run . db-config
+```
+
+The sample credentials sometimes published by database projects should be
+treated as public demo accounts, not as application secrets. Do not paste
+credentials into source files, commit messages, remotes, or chat logs. Use a
+local `.env` and rotate any credential that has been exposed.
+
+Nyansapo's database layer represents relational tables, columns, primary keys,
+foreign keys, document collections, nested fields, and provider-specific
+operations as catalog documents. Live introspection converts connected database
+metadata into those catalog documents; it does not copy table data into the
+model.
+
+For MySQL and PostgreSQL, the live introspection command is:
+
+```text
+go run . db-introspect
+go run . train
+```
+
+It writes `data/input/live-database.json` by default. MongoDB collections and
+nested fields, and Cassandra partition/clustering keys, use the same command
+and catalog format. Introspection only runs when read-only mode is enabled.
 
 For automatic retraining whenever supported files are added or changed, run:
 
@@ -120,20 +160,20 @@ only documents under `data/input`; there is no legacy knowledge-file fallback.
 1. Add a supported file under `data/input`:
 
    ```text
-   data/input/biology.txt
-   data/input/biology.json
-   data/input/biology.csv
-   data/input/biology.md
+   data/input/database-catalog.json
+   data/input/postgres-catalog.json
+   data/input/mysql-catalog.json
+   data/input/mongodb-catalog.json
    ```
 
    Plain text and Markdown files become one document. JSON content is combined
    into one contextual document. CSV rows become searchable documents.
 
-2. Put useful facts in the file. For example, `data/input/biology.txt`:
+2. Put useful database facts in the file. For example, `data/input/database-catalog.json`:
 
    ```text
-   Photosynthesis allows plants to convert light energy into chemical energy.
-   Chlorophyll helps plants absorb light.
+   The orders table joins customers through orders.customer_id = customers.id.
+   The orders table stores total_amount and created_at.
    ```
 
 3. Train the model from all files:
@@ -151,8 +191,8 @@ only documents under `data/input`; there is no legacy knowledge-file fallback.
 4. Test the newly trained model:
 
    ```text
-   go run . ask-trained What is photosynthesis?
-   go run . ask-trained What helps plants absorb light?
+   go run . ask-trained How are orders related to customers?
+   go run . ask-trained Which columns store order totals?
    ```
 
    The answer should contain the matching biology text. You can also test
@@ -168,7 +208,7 @@ only documents under `data/input`; there is no legacy knowledge-file fallback.
    go run . serve
    curl -X POST http://localhost:8080/ask `
      -H "Content-Type: application/json" `
-     -d "{\"question\":\"What is photosynthesis?\"}"
+     -d "{\"question\":\"How are orders related to customers?\"}"
    ```
 
 6. During development, automatically retrain when files are added or changed:
@@ -196,7 +236,7 @@ Run a single-process evaluation:
 go run . evaluate
 ```
 
-This runs 20 varied subject questions 10 times by default. Pass a repetition
+This runs 20 varied database questions 10 times by default. Pass a repetition
 count to choose the total; for example, this runs exactly 500 CLI queries:
 
 ```text
@@ -221,13 +261,11 @@ definition, process, or reason question, selects the best sentence, and adds
 nearby supporting evidence when available. For example:
 
 ```text
-What is photosynthesis?
-  In simple terms, Photosynthesis allows plants to convert light energy into
-  chemical energy. Chlorophyll helps plants absorb light.
+How are orders related to customers?
+  Orders join customers through orders.customer_id = customers.id.
 
-How do plants make food?
-  The process works like this: Photosynthesis allows plants to convert light
-  energy into chemical energy. Chlorophyll helps plants absorb light.
+How can I inspect a slow query?
+  Use a read-only EXPLAIN query to inspect the database query plan.
 ```
 
 Repeated questions can use different explanatory connectors, while the
