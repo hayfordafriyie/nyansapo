@@ -50,6 +50,30 @@ func TestAskRejectsMalformedJSON(t *testing.T) {
 	}
 }
 
+func TestAskRejectsTrailingJSON(t *testing.T) {
+	server := NewServer(model.Knowledge{Description: "A platform."})
+	request := httptest.NewRequest(http.MethodPost, "/ask", strings.NewReader(`{"question":"test"} {}`))
+	response := httptest.NewRecorder()
+
+	server.ServeHTTP(response, request)
+
+	if response.Code != http.StatusBadRequest {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusBadRequest)
+	}
+}
+
+func TestAskRejectsUnsupportedMethod(t *testing.T) {
+	server := NewServer(model.Knowledge{})
+	request := httptest.NewRequest(http.MethodGet, "/ask", nil)
+	response := httptest.NewRecorder()
+
+	server.ServeHTTP(response, request)
+
+	if response.Code != http.StatusMethodNotAllowed {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusMethodNotAllowed)
+	}
+}
+
 func TestHealth(t *testing.T) {
 	server := NewServer(model.Knowledge{})
 	request := httptest.NewRequest(http.MethodGet, "/health", nil)
