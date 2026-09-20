@@ -18,3 +18,15 @@ What country?
 Tell me about learning
 exit
 ```
+
+Start the JSON API:
+
+```text
+go run . serve
+```
+
+Send a question with `POST /ask`:
+
+```text
+curl -X POST http://localhost:8080/ask -H "Content-Type: application/json" -d "{\"question\":\"What is EDSPiKE?\"}"
+```

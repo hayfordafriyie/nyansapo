@@ -4,11 +4,19 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"mini-llm/model"
 )
 
 func main() {
+	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "serve") {
+		if err := runServer(); err != nil {
+			panic(err)
+		}
+		return
+	}
+
 	knowledge, err := model.LoadKnowledge("data/knowledge.json")
 	if err != nil {
 		panic(err)
