@@ -22,7 +22,7 @@ func TestLoadMixedDocuments(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(documents) != 5 {
-		t.Fatalf("got %d documents, want 5", len(documents))
+	if len(documents) != 4 {
+		t.Fatalf("got %d documents, want 4", len(documents))
 	}
 }

@@ -91,13 +91,16 @@ func readJSON(path string) ([]Document, error) {
 	}
 	var texts []string
 	collectStrings(value, &texts)
-	documents := make([]Document, 0, len(texts))
+	var content []string
 	for _, text := range texts {
 		if text = strings.TrimSpace(text); text != "" {
-			documents = append(documents, Document{Source: path, Text: text})
+			content = append(content, text)
 		}
 	}
-	return documents, nil
+	if len(content) == 0 {
+		return nil, nil
+	}
+	return []Document{{Source: path, Text: strings.Join(content, ". ")}}, nil
 }
 
 func collectStrings(value any, texts *[]string) {
