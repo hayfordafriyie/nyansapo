@@ -129,9 +129,22 @@ func readCSV(path string) ([]Document, error) {
 	if err != nil {
 		return nil, err
 	}
+	var header []string
+	if len(rows) > 0 {
+		header = make([]string, len(rows[0]))
+		for index, value := range rows[0] {
+			header[index] = strings.ToLower(strings.TrimSpace(value))
+		}
+	}
 	documents := make([]Document, 0, len(rows))
-	for _, row := range rows {
+	for rowIndex, row := range rows {
+		if rowIndex == 0 && len(header) >= 2 && header[0] == "topic" && header[1] == "explanation" {
+			continue
+		}
 		text := strings.TrimSpace(strings.Join(row, ": "))
+		if len(header) >= 2 && header[0] == "topic" && header[1] == "explanation" && len(row) >= 2 {
+			text = strings.TrimSpace(row[1])
+		}
 		if text != "" {
 			documents = append(documents, Document{Source: path, Text: text})
 		}

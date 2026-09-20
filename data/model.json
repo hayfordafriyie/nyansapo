@@ -35,7 +35,7 @@
       }
     },
     {
-      "text": "A fraction represents a part of a whole.. The area of a rectangle is length multiplied by width.. The mean is the sum of values divided by the number of values.. A prime number has exactly two positive factors: one and itself.. Mathematics",
+      "text": "Mathematics. A fraction represents a part of a whole.. The area of a rectangle is length multiplied by width.. The mean is the sum of values divided by the number of values.. A prime number has exactly two positive factors: one and itself.",
       "vector": {
         "and": 1,
         "area": 1,
@@ -103,16 +103,9 @@
       }
     },
     {
-      "text": "topic: explanation",
+      "text": "A community is a group of people who live or work together.",
       "vector": {
-        "explanation": 1,
-        "topic": 1
-      }
-    },
-    {
-      "text": "community: A community is a group of people who live or work together.",
-      "vector": {
-        "community": 2,
+        "community": 1,
         "group": 1,
         "live": 1,
         "people": 1,
@@ -122,24 +115,24 @@
       }
     },
     {
-      "text": "government: Government makes and applies rules for a society.",
+      "text": "Government makes and applies rules for a society.",
       "vector": {
         "and": 1,
         "applies": 1,
         "for": 1,
-        "government": 2,
+        "government": 1,
         "makes": 1,
         "rules": 1,
         "society": 1
       }
     },
     {
-      "text": "geography: Geography studies places people environments and how they connect.",
+      "text": "Geography studies places people environments and how they connect.",
       "vector": {
         "and": 1,
         "connect": 1,
         "environments": 1,
-        "geography": 2,
+        "geography": 1,
         "how": 1,
         "people": 1,
         "places": 1,
@@ -148,10 +141,10 @@
       }
     },
     {
-      "text": "citizenship: Good citizenship includes participation, responsibility, and respect.",
+      "text": "Good citizenship includes participation, responsibility, and respect.",
       "vector": {
         "and": 1,
-        "citizenship": 2,
+        "citizenship": 1,
         "good": 1,
         "includes": 1,
         "participation": 1,

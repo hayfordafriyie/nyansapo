@@ -29,3 +29,20 @@ func TestLoadMixedDocuments(t *testing.T) {
 		t.Fatalf("CSV row = %q, want labeled row", documents[3].Text)
 	}
 }
+
+func TestLoadTopicExplanationCSVUsesNaturalExplanation(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "subjects.csv")
+	content := "topic,explanation\ncitizenship,\"Good citizenship includes participation, responsibility, and respect.\"\n"
+	if err := os.WriteFile(path, []byte(content), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	documents, err := New().Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(documents) != 1 || documents[0].Text != "Good citizenship includes participation, responsibility, and respect." {
+		t.Fatalf("documents = %+v, want natural explanation", documents)
+	}
+}
