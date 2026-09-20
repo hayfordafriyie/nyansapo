@@ -24,3 +24,14 @@ func TestFormatIsStableForSameQuestion(t *testing.T) {
 		t.Fatalf("same question produced different answers: %q and %q", first, second)
 	}
 }
+
+func TestFormatBuildsExplanationFromRelatedContext(t *testing.T) {
+	got := Format(
+		"What is photosynthesis?",
+		"Science studies nature. Photosynthesis converts light energy into chemical energy. Chlorophyll absorbs light.",
+	)
+	if !strings.Contains(got, "Photosynthesis converts light energy") ||
+		!strings.Contains(got, "Chlorophyll absorbs light") {
+		t.Fatalf("Format() = %q, want explanation with related context", got)
+	}
+}

@@ -1,7 +1,6 @@
 package response
 
 import (
-	"hash/fnv"
 	"strings"
 
 	"mini-llm/tokenizer"
@@ -19,15 +18,16 @@ func Format(question, passage string) string {
 		return strings.TrimRight(body, ".!?")
 	}
 
-	templates := []string{
-		"In simple terms, %s",
-		"Put simply, %s",
-		"A helpful way to think about it is: %s",
-		"Here is the key idea: %s",
+	switch {
+	case strings.Contains(strings.ToLower(question), "why"):
+		return "The reason is that " + body
+	case strings.Contains(strings.ToLower(question), "how"):
+		return "The process works like this: " + body
+	case strings.Contains(strings.ToLower(question), "what"):
+		return "In simple terms, " + body
+	default:
+		return "The key idea is: " + body
 	}
-	hash := fnv.New32a()
-	_, _ = hash.Write([]byte(question))
-	return strings.Replace(templates[hash.Sum32()%uint32(len(templates))], "%s", body, 1)
 }
 
 func splitSentences(text string) []string {
@@ -65,14 +65,20 @@ func bestSentences(question string, sentences []string) []string {
 		scoredSentences = append(scoredSentences, scored{text: sentence, score: score, index: index})
 	}
 
-	best := scoredSentences[0]
+	bestIndex := 0
 	for _, candidate := range scoredSentences[1:] {
-		if candidate.score > best.score {
-			best = candidate
+		if candidate.score > scoredSentences[bestIndex].score {
+			bestIndex = candidate.index
 		}
 	}
+	best := scoredSentences[bestIndex]
 	if best.score == 0 || len(sentences) == 1 {
 		return []string{best.text}
 	}
-	return []string{best.text}
+
+	relevant := []string{best.text}
+	if best.index+1 < len(sentences) {
+		relevant = append(relevant, sentences[best.index+1])
+	}
+	return relevant
 }
