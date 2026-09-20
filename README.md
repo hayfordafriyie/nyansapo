@@ -173,3 +173,24 @@ go run . train path\to\my-data
 
 To add a new format such as Parquet, register a reader in `pipeline/pipeline.go`;
 the model and API layers do not need to change.
+
+## Natural-language answers
+
+The retrieval model first finds the most relevant trained passage. The response
+layer then selects the best sentence and applies a small deterministic phrasing
+variation, for example:
+
+```text
+What is photosynthesis?
+  A helpful way to think about it is: Photosynthesis allows plants to convert
+  light energy into chemical energy.
+
+How do plants make food?
+  Here is the key idea: Photosynthesis allows plants to convert light energy
+  into chemical energy.
+```
+
+The same question produces the same answer, while differently worded questions
+can use different phrasing. This keeps answers reproducible and grounded in
+your documents. It is not yet a fully generative Transformer; adding one later
+would require a language model trained for text generation.
