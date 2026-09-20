@@ -69,8 +69,9 @@ changing the model or API layers.
 waits until supported files are added.
 
 The repository includes small sample files for testing the pipeline:
-`science.txt`, `statistics.json`, and `experiments.csv`. After adding or
-changing data, retrain and test questions such as:
+`science.txt`, `statistics.json`, `experiments.csv`, `edspike-overview.md`,
+`edspike-facts.json`, and `edspike-features.csv`. After adding or changing
+data, retrain and test questions such as:
 
 ```text
 go run . train

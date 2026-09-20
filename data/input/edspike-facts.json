@@ -1,0 +1,11 @@
+{
+  "organization": "EDSPiKE",
+  "country": "Ghana",
+  "description": "A school management and learning platform",
+  "services": [
+    "Student management",
+    "Teacher management",
+    "School management",
+    "Learning management"
+  ]
+}

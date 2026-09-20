@@ -1,6 +1,134 @@
 {
   "candidates": [
     {
+      "text": "organization",
+      "vector": {
+        "organization": 1
+      }
+    },
+    {
+      "text": "EDSPiKE",
+      "vector": {
+        "edspike": 1
+      }
+    },
+    {
+      "text": "country",
+      "vector": {
+        "country": 1
+      }
+    },
+    {
+      "text": "Ghana",
+      "vector": {
+        "ghana": 1
+      }
+    },
+    {
+      "text": "description",
+      "vector": {
+        "description": 1
+      }
+    },
+    {
+      "text": "A school management and learning platform",
+      "vector": {
+        "and": 1,
+        "learning": 1,
+        "management": 1,
+        "platform": 1,
+        "school": 1
+      }
+    },
+    {
+      "text": "services",
+      "vector": {
+        "services": 1
+      }
+    },
+    {
+      "text": "Student management",
+      "vector": {
+        "management": 1,
+        "student": 1
+      }
+    },
+    {
+      "text": "Teacher management",
+      "vector": {
+        "management": 1,
+        "teacher": 1
+      }
+    },
+    {
+      "text": "School management",
+      "vector": {
+        "management": 1,
+        "school": 1
+      }
+    },
+    {
+      "text": "Learning management",
+      "vector": {
+        "learning": 1,
+        "management": 1
+      }
+    },
+    {
+      "text": "area capability",
+      "vector": {
+        "area": 1,
+        "capability": 1
+      }
+    },
+    {
+      "text": "students Student management",
+      "vector": {
+        "management": 1,
+        "student": 1,
+        "students": 1
+      }
+    },
+    {
+      "text": "teachers Teacher management",
+      "vector": {
+        "management": 1,
+        "teacher": 1,
+        "teachers": 1
+      }
+    },
+    {
+      "text": "schools School management",
+      "vector": {
+        "management": 1,
+        "school": 1,
+        "schools": 1
+      }
+    },
+    {
+      "text": "learning Learning management",
+      "vector": {
+        "learning": 2,
+        "management": 1
+      }
+    },
+    {
+      "text": "# EDSPiKE\r\n\r\nEDSPiKE is a school management and learning platform based in Ghana.\r\nIt supports student management, teacher management, school management,\r\nand learning management.",
+      "vector": {
+        "and": 2,
+        "based": 1,
+        "edspike": 2,
+        "ghana": 1,
+        "learning": 2,
+        "management": 5,
+        "platform": 1,
+        "school": 2,
+        "student": 1,
+        "supports": 1,
+        "teacher": 1
+      }
+    },
+    {
       "text": "topic example",
       "vector": {
         "example": 1,
