@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
+
+	"mini-llm/chat"
 )
 
-type Knowledge struct {
+type knowledgeFile struct {
 	Name        string   `json:"name"`
 	Country     string   `json:"country"`
 	Description string   `json:"description"`
@@ -21,9 +22,16 @@ func main() {
 		panic(err)
 	}
 
-	var knowledge Knowledge
-	if err := json.Unmarshal(data, &knowledge); err != nil {
+	var file knowledgeFile
+	if err := json.Unmarshal(data, &file); err != nil {
 		panic(err)
+	}
+
+	knowledge := chat.Knowledge{
+		Name:        file.Name,
+		Country:     file.Country,
+		Description: file.Description,
+		Features:    file.Features,
 	}
 
 	fmt.Println("Ask about EDSPiKE (type \"exit\" to quit).")
@@ -35,20 +43,11 @@ func main() {
 			break
 		}
 
-		question := strings.ToLower(strings.TrimSpace(scanner.Text()))
+		question := scanner.Text()
 		if question == "exit" {
 			break
 		}
 
-		switch {
-		case strings.Contains(question, "what is") && strings.Contains(question, "edspike"):
-			fmt.Println(knowledge.Description)
-		case strings.Contains(question, "country"):
-			fmt.Println(knowledge.Country)
-		case strings.Contains(question, "feature"):
-			fmt.Println(strings.Join(knowledge.Features, ", "))
-		default:
-			fmt.Println("I do not know that yet.")
-		}
+		fmt.Println(chat.Answer(question, knowledge))
 	}
 }
