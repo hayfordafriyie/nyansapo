@@ -90,9 +90,14 @@ The repository includes database metadata and operation documentation under
 
 ```text
 go run . train
-go run . ask-trained What does read-only mode mean?
-go run . ask-trained What is a window function?
+go run . ask What does read-only mode mean?
+go run . ask What is a window function?
 ```
+
+Questions are routed automatically: business-data questions query the live
+database, schema questions are redirected, and everything else falls back to
+the trained documentation model. The same routing applies to the interactive
+prompt (`go run .`) and the HTTP API (`POST /ask`).
 
 ## Database connection configuration
 
@@ -147,10 +152,10 @@ API answers are cached in memory for up to 256 questions. Responses include
 answer. Retraining changes the model file timestamp, automatically bypassing
 old cached answers.
 
-Ask the persisted model directly:
+Ask one question without the interactive prompt:
 
 ```text
-go run . ask-trained Tell me about school management
+go run . ask Tell me about school management
 ```
 
 Run `go run . train` before using the CLI or API. The application now uses
@@ -191,7 +196,7 @@ only documents under `data/input`; there is no legacy knowledge-file fallback.
 4. Test the newly trained model:
 
    ```text
-   go run . ask-trained What does read-only mode mean?
+   go run . ask What does read-only mode mean?
    ```
 
    The answer should contain the matching documentation text. You can also test

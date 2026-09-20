@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -23,6 +24,7 @@ func IsSchemaQuestion(question string) bool {
 type DataAssistant struct {
 	config  Config
 	db      *sql.DB
+	mu      sync.RWMutex
 	catalog Catalog
 }
 
@@ -66,6 +68,23 @@ func (a *DataAssistant) Close() error {
 		return nil
 	}
 	return a.db.Close()
+}
+
+// RefreshCatalog re-introspects the connected database so the assistant picks
+// up new tables and columns without restarting. Errors leave the current
+// catalog untouched.
+func (a *DataAssistant) RefreshCatalog(ctx context.Context) error {
+	if a == nil || a.db == nil {
+		return fmt.Errorf("no connected database")
+	}
+	catalog, err := IntrospectSQL(ctx, a.db, a.config.Provider, a.config.Database, a.config.Name)
+	if err != nil {
+		return err
+	}
+	a.mu.Lock()
+	a.catalog = catalog
+	a.mu.Unlock()
+	return nil
 }
 
 func (a *DataAssistant) Ask(ctx context.Context, question string) (DataAnswer, error) {
@@ -118,11 +137,23 @@ func (a *DataAssistant) Ask(ctx context.Context, question string) (DataAnswer, e
 	}, nil
 }
 
+// Catalog returns a snapshot of the currently introspected catalog.
+func (a *DataAssistant) Catalog() Catalog {
+	if a == nil {
+		return Catalog{}
+	}
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	return a.catalog
+}
+
 func (a *DataAssistant) Plan(question string) (string, error) {
 	normalized := strings.ToLower(strings.TrimSpace(question))
 	if normalized == "" {
 		return "", ErrUnsupportedDataQuestion
 	}
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	switch {
 	case containsAny(normalized, "absent", "absence", "attendance"):
 		for _, table := range rankedTables(a.catalog.Tables, []string{"absence", "absent", "attendance", "leave"}) {
@@ -134,8 +165,13 @@ func (a *DataAssistant) Plan(question string) (string, error) {
 		if table, ok := bestTable(a.catalog.Tables, questionWords(normalized)); ok {
 			return countQuery(a.config.Provider, table), nil
 		}
-	case containsAny(normalized, "money", "revenue", "income", "sales", "payment", "paid", "amount"):
+	case containsAny(normalized, "money", "revenue", "income", "sales", "payment", "paid", "amount", "how much", "total", "sum", "earned", "spent"):
 		for _, table := range rankedTables(a.catalog.Tables, []string{"payment", "transaction", "sale", "invoice", "revenue", "income", "order"}) {
+			if query, ok := revenueQuery(a.config.Provider, table, normalized); ok {
+				return query, nil
+			}
+		}
+		for _, table := range a.catalog.Tables {
 			if query, ok := revenueQuery(a.config.Provider, table, normalized); ok {
 				return query, nil
 			}
@@ -145,41 +181,51 @@ func (a *DataAssistant) Plan(question string) (string, error) {
 }
 
 func absenceQuery(provider Provider, table Table) (string, bool) {
-	name := findColumn(table, []string{"staff_name", "employee_name", "full_name", "name", "staff_id", "employee_id", "user_id", "person_id"})
-	date := findColumn(table, []string{"attendance_date", "absence_date", "absent_date", "date", "day", "occurred_at", "created_at"})
-	status := findColumn(table, []string{"status", "attendance_status", "state", "reason"})
-	if name == "" || date == "" {
+	date, ok := pickTemporalColumn(table)
+	if !ok {
 		return "", false
 	}
-	columns := []string{quoteIdentifier(provider, name)}
-	if date != "" {
-		columns = append(columns, quoteIdentifier(provider, date))
+	skipped := map[string]bool{date.Name: true}
+	name, ok := pickPersonColumn(table, skipped)
+	if !ok {
+		return "", false
 	}
-	if status != "" {
-		columns = append(columns, quoteIdentifier(provider, status))
+	skipped[name.Name] = true
+	status, _ := pickStatusColumn(table, skipped)
+
+	columns := []string{quoteIdentifier(provider, name.Name)}
+	if date.Name != "" {
+		columns = append(columns, quoteIdentifier(provider, date.Name))
+	}
+	if status.Name != "" {
+		columns = append(columns, quoteIdentifier(provider, status.Name))
 	}
 	tableName := qualifiedTable(provider, table)
-	dateFilter := dateExpression(provider, date)
+	dateFilter := dateExpression(provider, date.Name)
 	statusFilter := ""
-	if status != "" {
-		statusFilter = fmt.Sprintf(" AND LOWER(CAST(%s AS CHAR)) IN ('absent', 'absence', 'sick', 'leave')", quoteIdentifier(provider, status))
+	if status.Name != "" {
+		statusFilter = fmt.Sprintf(" AND LOWER(CAST(%s AS CHAR)) IN ('absent', 'absence', 'sick', 'leave')", quoteIdentifier(provider, status.Name))
 		if provider == ProviderPostgreSQL {
-			statusFilter = fmt.Sprintf(" AND LOWER(CAST(%s AS TEXT)) IN ('absent', 'absence', 'sick', 'leave')", quoteIdentifier(provider, status))
+			statusFilter = fmt.Sprintf(" AND LOWER(CAST(%s AS TEXT)) IN ('absent', 'absence', 'sick', 'leave')", quoteIdentifier(provider, status.Name))
 		}
 	}
 	return fmt.Sprintf("SELECT %s FROM %s WHERE %s >= %s%s ORDER BY %s DESC LIMIT 100",
-		strings.Join(columns, ", "), tableName, quoteIdentifier(provider, date), dateFilter, statusFilter, quoteIdentifier(provider, date)), true
+		strings.Join(columns, ", "), tableName, quoteIdentifier(provider, date.Name), dateFilter, statusFilter, quoteIdentifier(provider, date.Name)), true
 }
 
 func revenueQuery(provider Provider, table Table, question string) (string, bool) {
-	amount := findColumn(table, []string{"amount", "total_amount", "paid_amount", "net_amount", "total", "revenue", "price", "value"})
-	date := findColumn(table, []string{"payment_date", "transaction_date", "sale_date", "invoice_date", "date", "created_at", "paid_at"})
-	if amount == "" || date == "" {
+	date, ok := pickTemporalColumn(table)
+	if !ok {
 		return "", false
 	}
-	sum := fmt.Sprintf("SUM(%s)", quoteIdentifier(provider, amount))
+	skipped := map[string]bool{date.Name: true}
+	amount, ok := pickAmountColumn(table, skipped)
+	if !ok {
+		return "", false
+	}
+	sum := fmt.Sprintf("SUM(%s)", quoteIdentifier(provider, amount.Name))
 	return fmt.Sprintf("SELECT %s AS total_%s FROM %s WHERE %s >= %s",
-		sum, amount, qualifiedTable(provider, table), quoteIdentifier(provider, date), dateExpression(provider, date)), true
+		sum, amount.Name, qualifiedTable(provider, table), quoteIdentifier(provider, date.Name), dateExpression(provider, date.Name)), true
 }
 
 func countQuery(provider Provider, table Table) string {
@@ -201,10 +247,30 @@ func dateExpression(provider Provider, column string) string {
 
 func bestTable(tables []Table, terms []string) (Table, bool) {
 	ranked := rankedTables(tables, terms)
-	if len(ranked) == 0 {
-		return Table{}, false
+	if len(ranked) > 0 {
+		return ranked[0], true
 	}
-	return ranked[0], true
+	for _, term := range terms {
+		if synonyms, ok := tableSynonyms[term]; ok {
+			if table, ok := bestTable(tables, synonyms); ok {
+				return table, true
+			}
+		}
+	}
+	return Table{}, false
+}
+
+var tableSynonyms = map[string][]string{
+	"staff":    {"employee", "person", "worker", "human"},
+	"people":   {"employee", "person", "customer", "client"},
+	"workers":  {"employee", "person", "staff"},
+	"client":   {"customer", "person"},
+	"clients":  {"customer", "client"},
+	"receipts": {"payment", "transaction", "invoice"},
+	"orders":   {"order", "sale"},
+	"sales":    {"payment", "transaction", "invoice", "sale", "order"},
+	"buyers":   {"customer", "client"},
+	"purchases": {"payment", "transaction", "order"},
 }
 
 func rankedTables(tables []Table, terms []string) []Table {
@@ -246,23 +312,137 @@ func rankedTables(tables []Table, terms []string) []Table {
 	return tablesRanked
 }
 
-func findColumn(table Table, names []string) string {
-	for _, name := range names {
-		for _, column := range table.Columns {
-			if strings.EqualFold(column.Name, name) {
-				return column.Name
-			}
+// Column roles are detected from the introspected catalog by data type and
+// generic name patterns, never from a fixed schema. This keeps the assistant
+// schema-agnostic: plug in any read-only database and it adapts automatically.
+func isTemporalType(columnType string) bool {
+	lower := strings.ToLower(columnType)
+	return strings.Contains(lower, "date") || strings.Contains(lower, "time")
+}
+
+func isNumericType(columnType string) bool {
+	lower := strings.ToLower(columnType)
+	return strings.Contains(lower, "int") || strings.Contains(lower, "serial") ||
+		strings.Contains(lower, "decimal") || strings.Contains(lower, "numeric") ||
+		strings.Contains(lower, "float") || strings.Contains(lower, "real") ||
+		strings.Contains(lower, "double") || strings.Contains(lower, "money")
+}
+
+func isTextType(columnType string) bool {
+	lower := strings.ToLower(columnType)
+	return strings.Contains(lower, "char") || strings.Contains(lower, "text") ||
+		strings.Contains(lower, "string") || strings.Contains(lower, "uuid") ||
+		strings.Contains(lower, "enum")
+}
+
+func isIDColumn(column Column) bool {
+	lower := strings.ToLower(column.Name)
+	return column.PrimaryKey || lower == "id" || strings.HasSuffix(lower, "_id")
+}
+
+// pickTemporalColumn finds a timestamp/date column so date-bounded queries can
+// be built without assuming names like "created_at".
+func pickTemporalColumn(table Table) (Column, bool) {
+	for _, column := range table.Columns {
+		if isTemporalType(column.Type) {
+			return column, true
 		}
 	}
 	for _, column := range table.Columns {
 		lower := strings.ToLower(column.Name)
-		for _, name := range names {
-			if strings.Contains(lower, strings.ToLower(name)) {
-				return column.Name
+		if strings.Contains(lower, "date") || strings.Contains(lower, "time") || strings.Contains(lower, "_at") {
+			return column, true
+		}
+	}
+	return Column{}, false
+}
+
+// pickAmountColumn finds a measure column to aggregate, preferring money-like
+// or generic numeric columns.
+func pickAmountColumn(table Table, skipped map[string]bool) (Column, bool) {
+	var fallback Column
+	found := false
+	for _, column := range table.Columns {
+		if skipped[column.Name] || isIDColumn(column) {
+			continue
+		}
+		lower := strings.ToLower(column.Name)
+		moneyLike := containsAny(lower, "amount", "price", "fee", "cost", "value", "salary", "payment", "revenue", "income", "total", "sum")
+		if isNumericType(column.Type) {
+			if moneyLike {
+				return column, true
+			}
+			if !found {
+				fallback, found = column, true
 			}
 		}
 	}
-	return ""
+	return fallback, found
+}
+
+// pickPersonColumn finds the column that names an entity (employee/student/
+// customer), preferring name-like or ID columns.
+func pickPersonColumn(table Table, skipped map[string]bool) (Column, bool) {
+	priority := []string{"name", "full name", "fullname", "first name", "last name", "employee", "staff", "person", "user", "student", "customer", "client", "member"}
+	best := Column{}
+	bestScore := 0
+	for _, column := range table.Columns {
+		if skipped[column.Name] {
+			continue
+		}
+		lower := strings.ToLower(column.Name)
+		score := 0
+		for _, name := range priority {
+			if strings.Contains(lower, name) {
+				score += 5
+			}
+		}
+		if isTextType(column.Type) {
+			score += 1
+		}
+		if strings.HasSuffix(lower, "_id") || strings.HasSuffix(lower, "id") {
+			score += 2
+		}
+		if score > bestScore {
+			best, bestScore = column, score
+		}
+	}
+	if bestScore == 0 {
+		return Column{}, false
+	}
+	return best, true
+}
+
+// pickStatusColumn finds a text column describing state, preferring status/
+// state/reason-like columns, falling back to the first free text column.
+func pickStatusColumn(table Table, skipped map[string]bool) (Column, bool) {
+	priority := []string{"status", "state", "reason", "type", "flag", "mark", "result"}
+	best := Column{}
+	bestScore := 0
+	var fallback Column
+	var hasFallback bool
+	for _, column := range table.Columns {
+		if skipped[column.Name] || !isTextType(column.Type) {
+			continue
+		}
+		lower := strings.ToLower(column.Name)
+		score := 0
+		for _, name := range priority {
+			if strings.Contains(lower, name) {
+				score += 3
+			}
+		}
+		if score > bestScore {
+			best, bestScore = column, score
+		}
+		if !hasFallback {
+			fallback, hasFallback = column, true
+		}
+	}
+	if bestScore > 0 {
+		return best, true
+	}
+	return fallback, hasFallback
 }
 
 func qualifiedTable(provider Provider, table Table) string {
@@ -316,9 +496,9 @@ func formatAnswer(question string, columns []string, rows [][]string) string {
 		return pick(noRecordTemplates)
 	}
 	normalized := strings.ToLower(question)
-	nameIndex := indexOfColumn(columns, "employee", "staff", "name")
-	dateIndex := indexOfColumn(columns, "date", "created", "paid", "occurred")
-	statusIndex := indexOfColumn(columns, "status", "state", "reason")
+	nameIndex := indexOfColumn(columns, "name", "person", "user", "full_name", "customer", "client", "member", "id")
+	dateIndex := indexOfColumn(columns, "date", "time", "_at", "created", "scheduled", "occurred")
+	statusIndex := indexOfColumn(columns, "status", "state", "reason", "flag", "result")
 
 	if len(rows) == 1 && len(columns) == 1 {
 		value := rows[0][0]
@@ -443,11 +623,8 @@ func indexOfColumn(columns []string, needles ...string) int {
 
 func displayPerson(value, column string) string {
 	lower := strings.ToLower(column)
-	if strings.Contains(lower, "name") {
-		return value
-	}
-	if strings.Contains(lower, "id") {
-		return "Employee " + value
+	if strings.HasSuffix(lower, "id") || lower == "id" {
+		return "Record " + value
 	}
 	return value
 }

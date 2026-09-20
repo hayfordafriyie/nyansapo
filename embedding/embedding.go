@@ -14,6 +14,17 @@ var stopWords = map[string]struct{}{
 	"in": {}, "is": {}, "it": {}, "of": {}, "on": {}, "or": {}, "that": {},
 	"the": {}, "this": {}, "to": {}, "was": {}, "what": {}, "when": {},
 	"where": {}, "which": {}, "who": {}, "why": {}, "with": {}, "you": {},
+	"am": {}, "has": {}, "have": {}, "had": {}, "did": {}, "been": {},
+	"will": {}, "would": {}, "can": {}, "could": {}, "should": {}, "may": {},
+	"my": {}, "your": {}, "our": {}, "their": {}, "his": {}, "her": {},
+	"me": {}, "we": {}, "they": {}, "he": {}, "she": {}, "get": {},
+	"got": {}, "say": {}, "said": {}, "tell": {}, "know": {}, "like": {},
+	"want": {}, "about": {}, "there": {}, "so": {}, "just": {}, "please": {},
+}
+
+func IsStopWord(word string) bool {
+	_, ok := stopWords[word]
+	return ok
 }
 
 func Embed(text string) Vector {

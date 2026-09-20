@@ -14,10 +14,12 @@ import (
 	"time"
 
 	"nyansapo/api"
+	"nyansapo/conversation"
 	"nyansapo/database"
 	"nyansapo/evaluation"
 	"nyansapo/model"
 	"nyansapo/pipeline"
+	"nyansapo/selflearn"
 )
 
 func main() {
@@ -47,6 +49,9 @@ func main() {
 		trained, err := trainFrom(source)
 		if err != nil {
 			panic(err)
+		}
+		if existing, err := model.LoadTrained("data/model.json"); err == nil && len(existing.Facts) > 0 {
+			trained.Facts = existing.Facts
 		}
 		if err := trained.Save("data/model.json"); err != nil {
 			panic(err)
@@ -97,6 +102,9 @@ func main() {
 	if dataAssistant != nil {
 		defer dataAssistant.Close()
 	}
+	selfCtx, selfCancel := context.WithCancel(context.Background())
+	defer selfCancel()
+	trainer := startSelfLearning(selfCtx, dataAssistant)
 	answer := func(question string) string {
 		if dataAssistant != nil {
 			result, err := dataAssistant.Ask(context.Background(), question)
@@ -110,11 +118,14 @@ func main() {
 		if database.IsSchemaQuestion(question) {
 			return "Connect a read-only business database to ask questions about live records. Nyansapo is not intended to answer schema-only questions."
 		}
+		if trainer != nil {
+			return trainer.Answer(question)
+		}
 		return trained.Answer(question)
 	}
 
 	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "evaluate") {
-		result := evaluation.Run(trained, evaluationRepetitions(10))
+		result := evaluation.RunWith(answer, evaluationRepetitions(10))
 		fmt.Printf("queries: %d\nunknown: %d\nempty: %d\nungrounded: %d\nunique answers: %d\n", result.Total, result.Unknown, result.Empty, result.Ungrounded, result.Unique)
 		return
 	}
@@ -128,13 +139,15 @@ func main() {
 		return
 	}
 
-	if len(os.Args) > 2 && strings.EqualFold(os.Args[1], "ask-trained") {
-		fmt.Println(trained.Answer(strings.Join(os.Args[2:], " ")))
+	if len(os.Args) > 2 && strings.EqualFold(os.Args[1], "ask") {
+		fmt.Println(answer(strings.Join(os.Args[2:], " ")))
 		return
 	}
 
-	if len(os.Args) > 2 && strings.EqualFold(os.Args[1], "ask") {
-		fmt.Println(answer(strings.Join(os.Args[2:], " ")))
+	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "teach") {
+		if err := teachSession(answer, trainer); err != nil {
+			panic(err)
+		}
 		return
 	}
 
@@ -144,6 +157,7 @@ func main() {
 
 	fmt.Println("Ask a question (type \"exit\" to quit).")
 
+	memory := conversation.NewMemory(0)
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("> ")
@@ -156,7 +170,23 @@ func main() {
 			break
 		}
 
-		fmt.Println(answer(question))
+		if reply, ok := memory.Repeat(question); ok {
+			fmt.Println(reply)
+			memory.Remember(question, reply)
+			continue
+		}
+
+		if reply, ok := memory.Respond(question); ok {
+			fmt.Println(reply)
+			memory.Remember(question, reply)
+			continue
+		}
+
+		original := question
+		enriched := memory.Enrich(question)
+		response := answer(enriched)
+		fmt.Println(response)
+		memory.Remember(original, response)
 	}
 }
 
@@ -169,6 +199,66 @@ func evaluationRepetitions(defaultValue int) int {
 		panic("evaluation repetitions must be a positive integer")
 	}
 	return value
+}
+
+func teachSession(answer func(string) string, trainer *selflearn.Trainer) error {
+	fmt.Println("Training mode: ask questions. If the answer is wrong or missing, type the correct one at the prompt.")
+	fmt.Println("Type \"test <question>\" to verify without teaching, or \"exit\" to quit.")
+
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Print("> ")
+		if !scanner.Scan() {
+			break
+		}
+
+		input := strings.TrimSpace(scanner.Text())
+		if input == "" {
+			continue
+		}
+		if strings.EqualFold(input, "exit") {
+			break
+		}
+
+		if len(input) > 5 && strings.EqualFold(input[:5], "test ") {
+			question := strings.TrimSpace(input[5:])
+			reply := answer(question)
+			fmt.Println(reply)
+			continue
+		}
+
+		question := input
+		reply := answer(question)
+		fmt.Println(reply)
+
+		fmt.Print("Correct? (press Enter to accept, or type the correct answer): ")
+		if !scanner.Scan() {
+			break
+		}
+		correction := strings.TrimSpace(scanner.Text())
+		if correction == "" {
+			continue
+		}
+		if strings.EqualFold(correction, "exit") {
+			break
+		}
+		if trainer != nil {
+			if err := trainer.Teach(question, correction); err != nil {
+				return fmt.Errorf("save trained model: %w", err)
+			}
+		} else {
+			trained, err := model.LoadTrained("data/model.json")
+			if err != nil {
+				return err
+			}
+			trained.Teach(question, correction)
+			if err := trained.Save("data/model.json"); err != nil {
+				return fmt.Errorf("save trained model: %w", err)
+			}
+		}
+		fmt.Printf("Saved! Now testing... %s\n", answer(question))
+	}
+	return nil
 }
 
 func trainFrom(source string) (model.TrainedModel, error) {
@@ -207,6 +297,22 @@ func loadOptionalDataAssistant() (*database.DataAssistant, error) {
 	return database.NewDataAssistant(context.Background(), config)
 }
 
+func startSelfLearning(ctx context.Context, assistant *database.DataAssistant) *selflearn.Trainer {
+	initial, err := model.LoadTrained("data/model.json")
+	if err != nil {
+		return nil
+	}
+	trainer := selflearn.New(selflearn.Options{
+		Source:    "data/input",
+		ModelPath: "data/model.json",
+		LivePath:  "data/input/live-database.json",
+		Interval:  5 * time.Second,
+		Assistant: assistant,
+	}, initial)
+	trainer.Start(ctx)
+	return trainer
+}
+
 func watchTraining(source string) error {
 	var previous string
 	for {
@@ -234,6 +340,9 @@ func watchTraining(source string) error {
 }
 
 func runServer() error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	dataAssistant, err := loadOptionalDataAssistant()
 	if err != nil {
 		return fmt.Errorf("load configured database: %w", err)
@@ -244,6 +353,11 @@ func runServer() error {
 	server, err := api.NewDataServer("data/model.json", dataAssistant)
 	if err != nil {
 		return fmt.Errorf("load trained model; run `go run . train` first: %w", err)
+	}
+
+	trainer := startSelfLearning(ctx, dataAssistant)
+	if trainer != nil {
+		defer trainer.Stop(ctx)
 	}
 
 	log.Println("API listening on http://localhost:8080")

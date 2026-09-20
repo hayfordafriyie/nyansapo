@@ -9,6 +9,7 @@ import (
 	"os"
 	"strings"
 
+	"nyansapo/conversation"
 	"nyansapo/database"
 	"nyansapo/model"
 )
@@ -19,14 +20,15 @@ type Server struct {
 	data        func(context.Context, string) (database.DataAnswer, error)
 	trainedPath string
 	cache       *answerCache
+	memory      *conversation.Memory
 }
 
 func NewServer(knowledge model.Knowledge) *Server {
-	return &Server{answer: knowledge.Answer, cache: newAnswerCache(defaultCacheCapacity)}
+	return &Server{answer: knowledge.Answer, cache: newAnswerCache(defaultCacheCapacity), memory: conversation.NewMemory(0)}
 }
 
 func NewTrainedServer(trained model.TrainedModel) *Server {
-	return &Server{answer: trained.Answer, detailed: trained.AnswerResult, cache: newAnswerCache(defaultCacheCapacity)}
+	return &Server{answer: trained.Answer, detailed: trained.AnswerResult, cache: newAnswerCache(defaultCacheCapacity), memory: conversation.NewMemory(0)}
 }
 
 func NewDataServer(path string, assistant *database.DataAssistant) (*Server, error) {
@@ -45,7 +47,7 @@ func NewReloadingServer(path string) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Server{answer: trained.Answer, detailed: trained.AnswerResult, trainedPath: path, cache: newAnswerCache(defaultCacheCapacity)}, nil
+	return &Server{answer: trained.Answer, detailed: trained.AnswerResult, trainedPath: path, cache: newAnswerCache(defaultCacheCapacity), memory: conversation.NewMemory(0)}, nil
 }
 
 type questionRequest struct {
@@ -110,7 +112,24 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cacheKey := request.Question
+	if reply, ok := s.memory.Repeat(request.Question); ok {
+		s.memory.Remember(request.Question, reply)
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(answerResponse{Answer: reply, Grounded: true})
+		return
+	}
+
+	if reply, ok := s.memory.Respond(request.Question); ok {
+		s.memory.Remember(request.Question, reply)
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(answerResponse{Answer: reply, Grounded: true})
+		return
+	}
+
+	original := request.Question
+	request.Question = s.memory.Enrich(request.Question)
+
+	cacheKey := original
 	if s.trainedPath != "" {
 		info, err := os.Stat(s.trainedPath)
 		if err != nil {
@@ -182,6 +201,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		} else {
 			w.Header().Set("X-Cache", "BYPASS")
 		}
+	}
+
+	if result.Answer != "" {
+		s.memory.Remember(original, result.Answer)
 	}
 
 	w.Header().Set("Content-Type", "application/json")

@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sort"
 	"strings"
 
 	"nyansapo/embedding"
 	"nyansapo/response"
+	"nyansapo/tokenizer"
 )
 
 type trainedCandidate struct {
@@ -18,6 +20,7 @@ type trainedCandidate struct {
 type TrainedModel struct {
 	Candidates []trainedCandidate `json:"candidates"`
 	Knowledge  Knowledge          `json:"knowledge"`
+	Facts      map[string]string  `json:"facts,omitempty"`
 }
 
 type AnswerResult struct {
@@ -45,6 +48,102 @@ func Train(knowledge Knowledge) TrainedModel {
 	model := TrainTexts(append([]string{knowledge.Description}, knowledge.Features...))
 	model.Knowledge = knowledge
 	return model
+}
+
+func factTokens(question string) []string {
+	tokens := tokenizer.Tokenize(question)
+	sort.Strings(tokens)
+	return tokens
+}
+
+func factKey(question string) string {
+	return strings.Join(factTokens(question), " ")
+}
+
+func (m *TrainedModel) Teach(question, answer string) {
+	question = strings.TrimSpace(question)
+	answer = strings.TrimSpace(answer)
+	if question == "" || answer == "" {
+		return
+	}
+	if m.Facts == nil {
+		m.Facts = make(map[string]string)
+	}
+	m.Facts[factKey(question)] = answer
+}
+
+func (m TrainedModel) Fact(question string) (string, bool) {
+	if len(m.Facts) == 0 {
+		return "", false
+	}
+	if answer, ok := m.Facts[factKey(question)]; ok {
+		return answer, true
+	}
+
+	asked := factContentTokens(question)
+	if len(asked) == 0 {
+		return "", false
+	}
+	best := ""
+	bestCoverage := 0.0
+	bestSpecificity := int(^uint(0) >> 1)
+	for key, answer := range m.Facts {
+		required := factContentTokens(key)
+		if len(required) == 0 {
+			continue
+		}
+		coverage := tokensCoverage(asked, required)
+		specificity := len(required)
+		if coverage > bestCoverage ||
+			(coverage == bestCoverage && specificity < bestSpecificity) {
+			bestCoverage = coverage
+			bestSpecificity = specificity
+			best = answer
+		}
+	}
+	if bestCoverage >= 0.6 {
+		return best, true
+	}
+	return "", false
+}
+
+func factContentTokens(question string) []string {
+	var content []string
+	for _, token := range tokenizer.Tokenize(question) {
+		if isNumeric(token) {
+			content = append(content, token)
+			continue
+		}
+		if len(token) >= 3 && !embedding.IsStopWord(token) {
+			content = append(content, token)
+		}
+	}
+	sort.Strings(content)
+	return content
+}
+
+func isNumeric(token string) bool {
+	for _, character := range token {
+		if character < '0' || character > '9' {
+			return false
+		}
+	}
+	return token != ""
+}
+
+func tokensCoverage(asked, fact []string) float64 {
+	counts := make(map[string]int, len(asked))
+	for _, token := range asked {
+		counts[token]++
+	}
+	matched := 0
+	for _, token := range fact {
+		if counts[token] > 0 {
+			counts[token]--
+			matched++
+		}
+	}
+	return float64(matched) / float64(len(asked))
 }
 
 func (m TrainedModel) Save(path string) error {
@@ -90,6 +189,15 @@ func (m TrainedModel) Answer(question string) string {
 }
 
 func (m TrainedModel) AnswerResult(question string) AnswerResult {
+	if fact, ok := m.Fact(question); ok {
+		return AnswerResult{
+			Answer:     fact,
+			Evidence:   fact,
+			Confidence: 1,
+			Grounded:   true,
+		}
+	}
+
 	if answer := m.Knowledge.Answer(question); strings.TrimSpace(answer) != "" &&
 		answer != "I do not know that yet." {
 		return AnswerResult{
@@ -102,12 +210,14 @@ func (m TrainedModel) AnswerResult(question string) AnswerResult {
 
 	query := embedding.Embed(question)
 	var best string
+	var bestIndex int
 	var bestScore float64
-	for _, candidate := range m.Candidates {
+	for index, candidate := range m.Candidates {
 		score := candidateScore(question, candidate.Text, query, candidate.Vector)
 		if score > bestScore {
 			bestScore = score
 			best = candidate.Text
+			bestIndex = index
 		}
 	}
 
@@ -118,6 +228,25 @@ func (m TrainedModel) AnswerResult(question string) AnswerResult {
 			Grounded:   false,
 		}
 	}
+
+	shared := 0
+	for token := range query {
+		if _, ok := m.Candidates[bestIndex].Vector[token]; ok {
+			shared++
+		}
+	}
+	accepted := shared >= 2
+	if shared == 1 {
+		accepted = bestScore >= 0.3
+	}
+	if !accepted {
+		return AnswerResult{
+			Answer:     "I do not know that yet.",
+			Confidence: bestScore,
+			Grounded:   false,
+		}
+	}
+
 	answer := response.Format(question, best)
 	return AnswerResult{
 		Answer:     answer,

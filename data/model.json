@@ -134,7 +134,6 @@
     {
       "text": "The information_schema contains metadata about tables, columns, indexes, and constraints.",
       "vector": {
-        "about": 1,
         "columns": 1,
         "constraints": 1,
         "contains": 1,
