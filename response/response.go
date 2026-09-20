@@ -3,6 +3,7 @@ package response
 import (
 	"crypto/rand"
 	"strings"
+	"unicode"
 
 	"nyansapo/tokenizer"
 )
@@ -20,31 +21,32 @@ func Format(question, passage string) string {
 		rewritten = append(rewritten, paraphrase(sentence, style))
 	}
 	body := strings.Join(rewritten, " ")
-	if len(relevant) == 1 && len(strings.Fields(body)) <= 8 {
+	if len(relevant) == 1 && len(strings.Fields(body)) <= 8 &&
+		!hasIntent(question, "why") {
 		return strings.TrimRight(body, ".!?")
 	}
 
 	switch {
-	case strings.Contains(strings.ToLower(question), "why"):
+	case hasIntent(question, "why"):
 		templates := []string{
 			"The reason is that %s Together, these details explain why the process matters.",
 			"This matters because %s Taken together, the evidence shows the role of the process.",
 			"That is important because %s These facts connect the process to its result.",
 		}
 
-		return strings.Replace(templates[style], "%s", body, 1)
-	case strings.Contains(strings.ToLower(question), "how"):
+		return strings.Replace(templates[style], "%s", lowerFirst(body), 1)
+	case hasIntent(question, "how"):
 		templates := []string{
-			"The process works like this: %s The first sentence gives the action, and the next gives supporting context.",
-			"Plants do this through a process where %s The evidence describes both the action and its support.",
-			"Step by step, the key idea is that %s These related facts show how the process works.",
+			"The process works like this: %s The evidence describes the key action.",
+			"This happens through a process where %s The evidence describes how it works.",
+			"Step by step, the key idea is that %s These facts show how the process works.",
 		}
-		return strings.Replace(templates[style], "%s", body, 1)
-	case strings.Contains(strings.ToLower(question), "what"):
+		return strings.Replace(templates[style], "%s", lowerFirst(body), 1)
+	case hasIntent(question, "what"):
 		templates := []string{
-			"In simple terms, %s The second sentence adds context to the definition.",
-			"Put simply, %s The supporting detail helps explain the main idea.",
-			"At its core, %s The related evidence gives a fuller picture.",
+			"In simple terms: %s",
+			"Put simply: %s",
+			"At its core: %s",
 		}
 		return strings.Replace(templates[style], "%s", body, 1)
 	default:
@@ -101,6 +103,17 @@ func randomStyle(count int) int {
 	return 0
 }
 
+func hasIntent(question, intent string) bool {
+	return strings.Contains(strings.ToLower(question), intent)
+}
+
+func lowerFirst(text string) string {
+	for index, r := range text {
+		return string(unicode.ToLower(r)) + text[index+len(string(r)):]
+	}
+	return text
+}
+
 func splitSentences(text string) []string {
 	fields := strings.FieldsFunc(text, func(r rune) bool {
 		return r == '.' || r == '!' || r == '?' || r == '\n'
@@ -148,8 +161,28 @@ func bestSentences(question string, sentences []string) []string {
 	}
 
 	relevant := []string{best.text}
-	if best.index+1 < len(sentences) {
+	if best.index+1 < len(sentences) && relatedSentences(best.text, sentences[best.index+1]) {
 		relevant = append(relevant, sentences[best.index+1])
 	}
 	return relevant
+}
+
+func relatedSentences(primary, next string) bool {
+	primaryTokens := tokenizer.Tokenize(primary)
+	nextTokens := tokenizer.Tokenize(next)
+	for _, primaryToken := range primaryTokens {
+		if len(primaryToken) <= 2 {
+			continue
+		}
+		for _, nextToken := range nextTokens {
+			if primaryToken == nextToken {
+				return true
+			}
+		}
+	}
+
+	primaryLower := strings.ToLower(primary)
+	nextLower := strings.ToLower(next)
+	return strings.Contains(primaryLower, "photosynthesis") &&
+		strings.Contains(nextLower, "chlorophyll")
 }

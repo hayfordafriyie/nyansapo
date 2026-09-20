@@ -131,7 +131,7 @@ func readCSV(path string) ([]Document, error) {
 	}
 	documents := make([]Document, 0, len(rows))
 	for _, row := range rows {
-		text := strings.TrimSpace(strings.Join(row, " "))
+		text := strings.TrimSpace(strings.Join(row, ": "))
 		if text != "" {
 			documents = append(documents, Document{Source: path, Text: text})
 		}

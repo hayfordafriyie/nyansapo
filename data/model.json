@@ -35,7 +35,7 @@
       }
     },
     {
-      "text": "A fraction represents a part of a whole.. The area of a rectangle is length multiplied by width.. The mean is the sum of values divided by the number of values.. A prime number has exactly two positive factors: one and itself.. Mathematics",
+      "text": "Mathematics. A fraction represents a part of a whole.. The area of a rectangle is length multiplied by width.. The mean is the sum of values divided by the number of values.. A prime number has exactly two positive factors: one and itself.",
       "vector": {
         "and": 1,
         "area": 1,
@@ -103,14 +103,14 @@
       }
     },
     {
-      "text": "topic explanation",
+      "text": "topic: explanation",
       "vector": {
         "explanation": 1,
         "topic": 1
       }
     },
     {
-      "text": "community A community is a group of people who live or work together.",
+      "text": "community: A community is a group of people who live or work together.",
       "vector": {
         "community": 2,
         "group": 1,
@@ -122,7 +122,7 @@
       }
     },
     {
-      "text": "government Government makes and applies rules for a society.",
+      "text": "government: Government makes and applies rules for a society.",
       "vector": {
         "and": 1,
         "applies": 1,
@@ -134,7 +134,7 @@
       }
     },
     {
-      "text": "geography Geography studies places people environments and how they connect.",
+      "text": "geography: Geography studies places people environments and how they connect.",
       "vector": {
         "and": 1,
         "connect": 1,
@@ -148,7 +148,7 @@
       }
     },
     {
-      "text": "citizenship Good citizenship includes participation responsibility and respect.",
+      "text": "citizenship: Good citizenship includes participation, responsibility, and respect.",
       "vector": {
         "and": 1,
         "citizenship": 2,
@@ -160,7 +160,7 @@
       }
     },
     {
-      "text": "Mean is the sum of values divided by the number of values.. Median is the middle value after sorting a dataset.. A sample is a subset used to learn about a population.. Standard deviation measures how spread out values are.. Statistics",
+      "text": "Statistics. Mean is the sum of values divided by the number of values.. Median is the middle value after sorting a dataset.. A sample is a subset used to learn about a population.. Standard deviation measures how spread out values are.",
       "vector": {
         "about": 1,
         "after": 1,

@@ -25,4 +25,7 @@ func TestLoadMixedDocuments(t *testing.T) {
 	if len(documents) != 4 {
 		t.Fatalf("got %d documents, want 4", len(documents))
 	}
+	if documents[3].Text != "Ama: teacher" {
+		t.Fatalf("CSV row = %q, want labeled row", documents[3].Text)
+	}
 }
