@@ -41,6 +41,8 @@ Check API health with `GET /health`:
 curl http://localhost:8080/health
 ```
 
+Open `http://localhost:8080/` in a browser for the chat interface.
+
 Ask one question without the interactive prompt:
 
 ```text

@@ -88,3 +88,21 @@ func TestHealth(t *testing.T) {
 		t.Fatalf("response = %q, want health response", response.Body.String())
 	}
 }
+
+func TestChatPage(t *testing.T) {
+	server := NewServer(model.Knowledge{})
+	request := httptest.NewRequest(http.MethodGet, "/", nil)
+	response := httptest.NewRecorder()
+
+	server.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
+	}
+	if response.Header().Get("Content-Type") != "text/html; charset=utf-8" {
+		t.Fatalf("content type = %q, want HTML", response.Header().Get("Content-Type"))
+	}
+	if !strings.Contains(response.Body.String(), "EDSPiKE Assistant") {
+		t.Fatalf("response does not contain chat page title")
+	}
+}

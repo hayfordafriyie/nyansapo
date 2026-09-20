@@ -31,6 +31,16 @@ type answerResponse struct {
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path == "/" {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		_, _ = w.Write([]byte(chatPage))
+		return
+	}
+
 	if r.URL.Path == "/health" {
 		if r.Method != http.MethodGet {
 			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -76,3 +86,42 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 	}
 }
+
+const chatPage = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EDSPiKE Assistant</title>
+  <style>
+    body { font: 16px system-ui, sans-serif; max-width: 42rem; margin: 3rem auto; padding: 0 1rem; }
+    form { display: flex; gap: .5rem; }
+    input { flex: 1; padding: .7rem; }
+    button { padding: .7rem 1rem; }
+    #answer { margin-top: 1.5rem; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>EDSPiKE Assistant</h1>
+  <form id="ask-form">
+    <input id="question" placeholder="Ask a question" autocomplete="off" required>
+    <button>Ask</button>
+  </form>
+  <div id="answer" role="status"></div>
+  <script>
+    document.getElementById("ask-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const answer = document.getElementById("answer");
+      const question = document.getElementById("question");
+      answer.textContent = "Thinking...";
+      const response = await fetch("/ask", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({question: question.value})
+      });
+      const data = await response.json();
+      answer.textContent = response.ok ? data.answer : (data.error || "Request failed");
+    });
+  </script>
+</body>
+</html>`
