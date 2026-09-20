@@ -43,3 +43,10 @@ func TestTrainTexts(t *testing.T) {
 		t.Fatalf("got %d candidates, want 2", len(trained.Candidates))
 	}
 }
+
+func TestGenericModelDoesNotReturnEmptyMetadata(t *testing.T) {
+	trained := TrainTexts([]string{"EDSPiKE is a school management platform in Ghana."})
+	if got := trained.Answer("What is EDSPiKE?"); got == "" {
+		t.Fatal("generic model returned an empty answer")
+	}
+}

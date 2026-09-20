@@ -78,7 +78,8 @@ func (m TrainedModel) Validate() error {
 }
 
 func (m TrainedModel) Answer(question string) string {
-	if answer := m.Knowledge.Answer(question); answer != "I do not know that yet." {
+	if answer := m.Knowledge.Answer(question); strings.TrimSpace(answer) != "" &&
+		answer != "I do not know that yet." {
 		return answer
 	}
 
