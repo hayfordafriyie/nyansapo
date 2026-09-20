@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -8,12 +9,14 @@ import (
 	"os"
 	"strings"
 
+	"nyansapo/database"
 	"nyansapo/model"
 )
 
 type Server struct {
 	answer      func(string) string
 	detailed    func(string) model.AnswerResult
+	data        func(context.Context, string) (database.DataAnswer, error)
 	trainedPath string
 	cache       *answerCache
 }
@@ -24,6 +27,17 @@ func NewServer(knowledge model.Knowledge) *Server {
 
 func NewTrainedServer(trained model.TrainedModel) *Server {
 	return &Server{answer: trained.Answer, detailed: trained.AnswerResult, cache: newAnswerCache(defaultCacheCapacity)}
+}
+
+func NewDataServer(path string, assistant *database.DataAssistant) (*Server, error) {
+	server, err := NewReloadingServer(path)
+	if err != nil {
+		return nil, err
+	}
+	if assistant != nil {
+		server.data = assistant.Ask
+	}
+	return server, nil
 }
 
 func NewReloadingServer(path string) (*Server, error) {
@@ -39,9 +53,12 @@ type questionRequest struct {
 }
 
 type answerResponse struct {
-	Answer     string  `json:"answer"`
-	Confidence float64 `json:"confidence,omitempty"`
-	Grounded   bool    `json:"grounded"`
+	Answer     string     `json:"answer"`
+	Confidence float64    `json:"confidence,omitempty"`
+	Grounded   bool       `json:"grounded"`
+	Query      string     `json:"query,omitempty"`
+	Columns    []string   `json:"columns,omitempty"`
+	Rows       [][]string `json:"rows,omitempty"`
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -103,10 +120,20 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		cacheKey += "|" + info.ModTime().UTC().String()
 	}
 
-	result, cached := s.cache.get(cacheKey)
-	if cached {
-		w.Header().Set("X-Cache", "HIT")
-	} else {
+	// Live-data answers are paraphrased per request, so they bypass the cache
+	// to keep each response naturally worded while keeping the same core facts.
+	useCache := s.data == nil
+
+	var result answerResponse
+	var cached bool
+	if useCache {
+		result, cached = s.cache.get(cacheKey)
+		if cached {
+			w.Header().Set("X-Cache", "HIT")
+		}
+	}
+
+	if !useCache || !cached {
 		detailedFunction := s.detailed
 		answerFunction := s.answer
 		if s.trainedPath != "" {
@@ -118,18 +145,43 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			answerFunction = trained.Answer
 			detailedFunction = trained.AnswerResult
 		}
-		if detailedFunction != nil {
+		if s.data != nil {
+			dataResult, err := s.data(r.Context(), request.Question)
+			if err == nil {
+				result = answerResponse{
+					Answer:     dataResult.Answer,
+					Confidence: dataResult.Confidence,
+					Grounded:   true,
+					Query:      dataResult.Query,
+					Columns:    dataResult.Columns,
+					Rows:       dataResult.Rows,
+				}
+			} else if !errors.Is(err, database.ErrUnsupportedDataQuestion) {
+				http.Error(w, "database query failed", http.StatusBadGateway)
+				return
+			}
+		}
+		if result.Answer == "" && database.IsSchemaQuestion(request.Question) {
+			result = answerResponse{
+				Answer:   "Connect a read-only business database to ask questions about live records. Nyansapo is not intended to answer schema-only questions.",
+				Grounded: false,
+			}
+		} else if result.Answer == "" && detailedFunction != nil {
 			detailed := detailedFunction(request.Question)
 			result = answerResponse{
 				Answer:     detailed.Answer,
 				Confidence: detailed.Confidence,
 				Grounded:   detailed.Grounded,
 			}
-		} else {
+		} else if result.Answer == "" {
 			result = answerResponse{Answer: answerFunction(request.Question), Grounded: true}
 		}
-		s.cache.set(cacheKey, result)
-		w.Header().Set("X-Cache", "MISS")
+		if useCache {
+			s.cache.set(cacheKey, result)
+			w.Header().Set("X-Cache", "MISS")
+		} else {
+			w.Header().Set("X-Cache", "BYPASS")
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")

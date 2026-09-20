@@ -1,0 +1,328 @@
+{
+  "provider": "postgres",
+  "name": "",
+  "database": "nyansapo_test",
+  "tables": [
+    {
+      "schema": "public",
+      "name": "attendance",
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('attendance_id_seq'::regclass)",
+          "primary_key": false
+        },
+        {
+          "name": "employee_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "attendance_date",
+          "type": "date",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "id",
+          "referenced_schema": "public",
+          "referenced_table": "attendance",
+          "referenced_column": "id"
+        },
+        {
+          "column": "employee_id",
+          "referenced_schema": "public",
+          "referenced_table": "attendance",
+          "referenced_column": "attendance_date"
+        },
+        {
+          "column": "employee_id",
+          "referenced_schema": "public",
+          "referenced_table": "attendance",
+          "referenced_column": "employee_id"
+        },
+        {
+          "column": "attendance_date",
+          "referenced_schema": "public",
+          "referenced_table": "attendance",
+          "referenced_column": "attendance_date"
+        },
+        {
+          "column": "attendance_date",
+          "referenced_schema": "public",
+          "referenced_table": "attendance",
+          "referenced_column": "employee_id"
+        },
+        {
+          "column": "employee_id",
+          "referenced_schema": "public",
+          "referenced_table": "employees",
+          "referenced_column": "id"
+        }
+      ]
+    },
+    {
+      "schema": "public",
+      "name": "customers",
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('customers_id_seq'::regclass)",
+          "primary_key": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "id",
+          "referenced_schema": "public",
+          "referenced_table": "customers",
+          "referenced_column": "id"
+        }
+      ]
+    },
+    {
+      "schema": "public",
+      "name": "departments",
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('departments_id_seq'::regclass)",
+          "primary_key": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "location",
+          "type": "text",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "id",
+          "referenced_schema": "public",
+          "referenced_table": "departments",
+          "referenced_column": "id"
+        }
+      ]
+    },
+    {
+      "schema": "public",
+      "name": "employees",
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('employees_id_seq'::regclass)",
+          "primary_key": false
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "email",
+          "type": "text",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "department_id",
+          "type": "integer",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "hired_at",
+          "type": "date",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "nullable": true,
+          "default": "true",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "id",
+          "referenced_schema": "public",
+          "referenced_table": "employees",
+          "referenced_column": "id"
+        },
+        {
+          "column": "department_id",
+          "referenced_schema": "public",
+          "referenced_table": "departments",
+          "referenced_column": "id"
+        }
+      ]
+    },
+    {
+      "schema": "public",
+      "name": "orders",
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('orders_id_seq'::regclass)",
+          "primary_key": false
+        },
+        {
+          "name": "customer_id",
+          "type": "integer",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "amount",
+          "type": "numeric",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ordered_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "id",
+          "referenced_schema": "public",
+          "referenced_table": "orders",
+          "referenced_column": "id"
+        },
+        {
+          "column": "customer_id",
+          "referenced_schema": "public",
+          "referenced_table": "customers",
+          "referenced_column": "id"
+        }
+      ]
+    },
+    {
+      "schema": "public",
+      "name": "payments",
+      "columns": [
+        {
+          "name": "id",
+          "type": "integer",
+          "nullable": false,
+          "default": "nextval('payments_id_seq'::regclass)",
+          "primary_key": false
+        },
+        {
+          "name": "employee_id",
+          "type": "integer",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "amount",
+          "type": "numeric",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "paid_at",
+          "type": "timestamp without time zone",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "payment_method",
+          "type": "text",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "id",
+          "referenced_schema": "public",
+          "referenced_table": "payments",
+          "referenced_column": "id"
+        },
+        {
+          "column": "employee_id",
+          "referenced_schema": "public",
+          "referenced_table": "employees",
+          "referenced_column": "id"
+        }
+      ]
+    }
+  ],
+  "collections": null
+}

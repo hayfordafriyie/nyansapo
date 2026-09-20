@@ -3,7 +3,9 @@ package main
 import (
 	"bufio"
 	"context"
+	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -11,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"nyansapo/api"
 	"nyansapo/database"
 	"nyansapo/evaluation"
 	"nyansapo/model"
@@ -87,7 +90,28 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	answer := trained.Answer
+	dataAssistant, err := loadOptionalDataAssistant()
+	if err != nil {
+		panic(err)
+	}
+	if dataAssistant != nil {
+		defer dataAssistant.Close()
+	}
+	answer := func(question string) string {
+		if dataAssistant != nil {
+			result, err := dataAssistant.Ask(context.Background(), question)
+			if err == nil {
+				return result.Answer
+			}
+			if !errors.Is(err, database.ErrUnsupportedDataQuestion) {
+				return fmt.Sprintf("I could not safely query the configured database: %v", err)
+			}
+		}
+		if database.IsSchemaQuestion(question) {
+			return "Connect a read-only business database to ask questions about live records. Nyansapo is not intended to answer schema-only questions."
+		}
+		return trained.Answer(question)
+	}
 
 	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "evaluate") {
 		result := evaluation.Run(trained, evaluationRepetitions(10))
@@ -113,6 +137,10 @@ func main() {
 		fmt.Println(answer(strings.Join(os.Args[2:], " ")))
 		return
 	}
+
+	fmt.Println("Run a quick self-check before chatting...")
+	check := evaluation.RunWith(answer, 10)
+	fmt.Printf("self-check: %d queries, %d unknown, %d empty, %d ungrounded, %d unique answers\n", check.Total, check.Unknown, check.Empty, check.Ungrounded, check.Unique)
 
 	fmt.Println("Ask a question (type \"exit\" to quit).")
 
@@ -149,9 +177,16 @@ func trainFrom(source string) (model.TrainedModel, error) {
 		if err != nil {
 			return model.TrainedModel{}, err
 		}
+
 		texts := make([]string, 0, len(documents))
 		for _, document := range documents {
+			if strings.HasPrefix(strings.ToLower(filepath.Base(document.Source)), "live-") {
+				continue
+			}
 			texts = append(texts, document.Text)
+		}
+		if len(texts) == 0 {
+			return model.TrainedModel{}, fmt.Errorf("training source %s contains no documentation after excluding live catalogs", source)
 		}
 		return model.TrainTexts(texts), nil
 	} else if !os.IsNotExist(err) {
@@ -159,6 +194,17 @@ func trainFrom(source string) (model.TrainedModel, error) {
 	}
 
 	return model.TrainedModel{}, fmt.Errorf("training source %s does not exist", source)
+}
+
+func loadOptionalDataAssistant() (*database.DataAssistant, error) {
+	config, err := database.LoadConfig()
+	if err != nil {
+		if os.Getenv("NYANSAPO_DB_PROVIDER") == "" {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return database.NewDataAssistant(context.Background(), config)
 }
 
 func watchTraining(source string) error {
@@ -185,6 +231,23 @@ func watchTraining(source string) error {
 		}
 		time.Sleep(5 * time.Second)
 	}
+}
+
+func runServer() error {
+	dataAssistant, err := loadOptionalDataAssistant()
+	if err != nil {
+		return fmt.Errorf("load configured database: %w", err)
+	}
+	if dataAssistant != nil {
+		defer dataAssistant.Close()
+	}
+	server, err := api.NewDataServer("data/model.json", dataAssistant)
+	if err != nil {
+		return fmt.Errorf("load trained model; run `go run . train` first: %w", err)
+	}
+
+	log.Println("API listening on http://localhost:8080")
+	return http.ListenAndServe(":8080", server)
 }
 
 func sourceFingerprint(root string) (string, error) {

@@ -1,10 +1,10 @@
 # Nyansapo
 
-Nyansapo is a database-aware Go knowledge assistant. It can train a searchable
-catalog from database schemas and documentation, then answer questions about
-tables, columns, relationships, joins, indexes, and database operations. The
-current model is retrieval-based; it does not silently mutate a database or
-invent a query result.
+Nyansapo is a read-only business data assistant for administrators. Connect a
+database, ask questions in plain language, and receive answers computed from
+actual records such as attendance, absences, payments, revenue, sales, and
+orders. Schema metadata is used to plan safe queries; it is not the product's
+answer.
 
 Built and maintained by **Hayford Afriyie** — [hayfordafriyie.com](https://hayfordafriyie.com).
 Nyansapo is open source under the [MIT License](LICENSE).
@@ -15,13 +15,13 @@ Run it from the project root:
 go run .
 ```
 
-Ask questions such as:
+Ask business questions such as:
 
 ```text
-Which tables contain customer orders?
-How are orders related to customers?
-What columns should I use to join customers and orders?
-How does a PostgreSQL window function work?
+Which staff has been absent for a week?
+How much money did we receive in the last week?
+How many payments were received?
+Show recent attendance records.
 exit
 ```
 
@@ -37,14 +37,14 @@ the server. Invalid or empty model artifacts are rejected at startup.
 Send a question with `POST /ask`:
 
 ```text
-curl -X POST http://localhost:8080/ask -H "Content-Type: application/json" -d "{\"question\":\"How are orders related to customers?\"}"
+curl -X POST http://localhost:8080/ask -H "Content-Type: application/json" -d "{\"question\":\"How much money did we receive in the last week?\"}"
 ```
 
-Responses include the answer's retrieval confidence and whether the answer was
-grounded in matching training evidence:
+Successful database responses include the generated read-only query and the
+returned rows:
 
 ```json
-{"answer":"Orders are related to customers through orders.customer_id and customers.id.","confidence":0.42,"grounded":true}
+{"answer":"Found 1 matching record(s).","confidence":1,"grounded":true,"query":"SELECT SUM(\"amount\") AS total_amount FROM \"public\".\"payments\" WHERE \"paid_at\" >= CURRENT_TIMESTAMP - INTERVAL '7 days'","columns":["total_amount"],"rows":[["12500.00"]]}
 ```
 
 When the question has no sufficiently related evidence, Nyansapo returns
@@ -62,7 +62,7 @@ Open `http://localhost:8080/` in a browser for the chat interface.
 Ask one question without the interactive prompt:
 
 ```text
-go run . ask How are orders related to customers?
+go run . ask "How much money did we receive in the last week?"
 ```
 
 Build a persisted retrieval model from all supported files in `data/input`:
@@ -85,13 +85,12 @@ changing the model or API layers.
 `data/input` is the default drop folder. It may start empty; the watcher
 waits until supported files are added.
 
-The repository includes a database catalog fixture at
-`data/input/database-catalog.json`. After adding or changing database metadata,
-retrain and test questions such as:
+The repository includes database metadata and operation documentation under
+`data/input`. After adding or changing documentation, retrain and test it with:
 
 ```text
 go run . train
-go run . ask-trained How are orders related to customers?
+go run . ask-trained What does read-only mode mean?
 go run . ask-trained What is a window function?
 ```
 
@@ -117,11 +116,10 @@ treated as public demo accounts, not as application secrets. Do not paste
 credentials into source files, commit messages, remotes, or chat logs. Use a
 local `.env` and rotate any credential that has been exposed.
 
-Nyansapo's database layer represents relational tables, columns, primary keys,
-foreign keys, document collections, nested fields, and provider-specific
-operations as catalog documents. Live introspection converts connected database
-metadata into those catalog documents; it does not copy table data into the
-model.
+Nyansapo introspects relational metadata only to identify candidate business
+tables and columns. A business question is converted into a bounded,
+read-only query and executed against the configured database at request time.
+Returned records are not written into `data/model.json`.
 
 For MySQL and PostgreSQL, the live introspection command is:
 
@@ -160,10 +158,9 @@ only documents under `data/input`; there is no legacy knowledge-file fallback.
 
 ## Add data and test training
 
-1. Add a supported file under `data/input`:
+1. Add documentation or a schema export under `data/input`:
 
    ```text
-   data/input/database-catalog.json
    data/input/postgres-catalog.json
    data/input/mysql-catalog.json
    data/input/mongodb-catalog.json
@@ -172,11 +169,11 @@ only documents under `data/input`; there is no legacy knowledge-file fallback.
    Plain text and Markdown files become one document. JSON content is combined
    into one contextual document. CSV rows become searchable documents.
 
-2. Put useful database facts in the file. For example, `data/input/database-catalog.json`:
+2. Put useful documentation facts in the file. For example:
 
    ```text
-   The orders table joins customers through orders.customer_id = customers.id.
-   The orders table stores total_amount and created_at.
+   Attendance records contain staff_id, attendance_date, and status.
+   Payments contain amount and paid_at.
    ```
 
 3. Train the model from all files:
@@ -194,11 +191,10 @@ only documents under `data/input`; there is no legacy knowledge-file fallback.
 4. Test the newly trained model:
 
    ```text
-   go run . ask-trained How are orders related to customers?
-   go run . ask-trained Which columns store order totals?
+   go run . ask-trained What does read-only mode mean?
    ```
 
-   The answer should contain the matching biology text. You can also test
+   The answer should contain the matching documentation text. You can also test
    interactively:
 
    ```text
@@ -211,7 +207,7 @@ only documents under `data/input`; there is no legacy knowledge-file fallback.
    go run . serve
    curl -X POST http://localhost:8080/ask `
      -H "Content-Type: application/json" `
-     -d "{\"question\":\"How are orders related to customers?\"}"
+     -d "{\"question\":\"How much money did we receive in the last week?\"}"
    ```
 
 6. During development, automatically retrain when files are added or changed:
@@ -256,24 +252,21 @@ With the API running in another terminal, run the same evaluation through HTTP:
 go run . evaluate-api 25
 ```
 
-## Evidence-based answers
+## Business-data answers
 
-The retrieval model first finds the most relevant trained passage. The response
-layer then performs a small answer pipeline: it classifies the question as a
-definition, process, or reason question, selects the best sentence, and adds
-nearby supporting evidence when available. For example:
+When database configuration is present, the API and `ask` command use the
+read-only data assistant before documentation retrieval. For example:
 
 ```text
-How are orders related to customers?
-  Orders join customers through orders.customer_id = customers.id.
+Which staff has been absent for a week?
+  The connected database is queried for absence records from the last seven days.
 
-How can I inspect a slow query?
-  Use a read-only EXPLAIN query to inspect the database query plan.
+How much money did we receive in the last week?
+  The connected database is queried with a bounded SUM over payment amounts.
 ```
 
-Repeated questions can use different explanatory connectors, while the
-supporting facts remain grounded in your documents. This is evidence-based
-retrieval and composition. The trained model now verifies that the selected
-evidence overlaps the question and supports the answer before marking it
-grounded. This is not yet a fully generative Transformer; adding one later
-would require a language model trained for text generation.
+The current planner supports common attendance, absence, count, and
+money/revenue questions. Unsupported questions are not turned into guessed
+SQL; they fall back to documentation retrieval or report that the question
+cannot yet be mapped safely. This is a grounded query system, not yet a
+generative Transformer.

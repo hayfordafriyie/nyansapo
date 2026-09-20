@@ -18,7 +18,7 @@ func IntrospectConfigured(ctx context.Context, config Config) (Catalog, error) {
 	case ProviderCassandra:
 		return IntrospectCassandra(ctx, config)
 	}
-	driver, dsn, err := config.SQLDriverAndDSN()
+	driver, dsn, err := connectionDriverAndDSN(config)
 	if err != nil {
 		return Catalog{}, err
 	}

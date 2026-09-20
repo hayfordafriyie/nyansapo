@@ -1,11 +1,13 @@
 package api
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
+	"nyansapo/database"
 	"nyansapo/model"
 )
 
@@ -165,5 +167,41 @@ func TestTrainedServerReportsWeakRetrieval(t *testing.T) {
 	if !strings.Contains(response.Body.String(), `"answer":"I do not know that yet."`) ||
 		strings.Contains(response.Body.String(), `"grounded":true`) {
 		t.Fatalf("response = %q, want ungrounded refusal", response.Body.String())
+	}
+}
+
+func TestServerRefusesSchemaOnlyQuestionWithoutLiveDatabase(t *testing.T) {
+	server := NewTrainedServer(model.TrainTexts([]string{
+		"Orders are related to customers through a foreign key.",
+	}))
+	request := httptest.NewRequest(http.MethodPost, "/ask", strings.NewReader(`{"question":"Which tables contain customer orders?"}`))
+	response := httptest.NewRecorder()
+
+	server.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
+	}
+	if !strings.Contains(response.Body.String(), "Connect a read-only business database") ||
+		strings.Contains(response.Body.String(), "foreign key") {
+		t.Fatalf("response = %q, want live-data guidance", response.Body.String())
+	}
+}
+
+func TestLiveDataAnswersBypassCache(t *testing.T) {
+	server := NewTrainedServer(model.TrainTexts([]string{"placeholder."}))
+	server.data = func(_ context.Context, question string) (database.DataAnswer, error) {
+		return database.DataAnswer{Answer: "We received 26400.00 in the last seven days.", Confidence: 1}, nil
+	}
+	first := httptest.NewRecorder()
+	server.ServeHTTP(first, httptest.NewRequest(http.MethodPost, "/ask", strings.NewReader(`{"question":"How much money did we get?"}`)))
+	if first.Header().Get("X-Cache") != "BYPASS" {
+		t.Fatalf("first cache header = %q, want BYPASS", first.Header().Get("X-Cache"))
+	}
+
+	second := httptest.NewRecorder()
+	server.ServeHTTP(second, httptest.NewRequest(http.MethodPost, "/ask", strings.NewReader(`{"question":"How much money did we get?"}`)))
+	if second.Header().Get("X-Cache") != "BYPASS" {
+		t.Fatalf("second cache header = %q, want BYPASS for live-data answers", second.Header().Get("X-Cache"))
 	}
 }

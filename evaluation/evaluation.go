@@ -10,26 +10,26 @@ import (
 )
 
 var Questions = []string{
-	"What columns does the family table have?",
-	"What columns does the clan table have?",
-	"What columns does the rfamseq table have?",
-	"How are family and clan related?",
-	"What is a primary key?",
-	"What is a foreign key?",
-	"How do I join related tables?",
-	"What does GROUP BY do?",
-	"What is a window function?",
-	"What is a common table expression?",
-	"How do I inspect a query plan?",
-	"What is an index used for?",
-	"What does information_schema contain?",
-	"How does PostgreSQL support JSONB?",
-	"How does MySQL expose metadata?",
-	"How does MongoDB store nested fields?",
-	"How does Cassandra use partition keys?",
-	"Explain SQL joins",
-	"Explain database normalization",
-	"Explain read-only queries",
+	"Which staff has been absent for a week?",
+	"How much money did we receive in the last week?",
+	"How many staff are recorded?",
+	"How many payments were received?",
+	"Show staff attendance from the last week.",
+	"Show recent absences.",
+	"Which employees were marked absent?",
+	"What was our total revenue this week?",
+	"What was our total revenue in the last seven days?",
+	"How much was paid in the last week?",
+	"How many sales do we have?",
+	"How many orders were placed?",
+	"How many invoices are recorded?",
+	"How many transactions are recorded?",
+	"Show recent payment totals.",
+	"Which staff members have attendance records?",
+	"Show business activity from the last week.",
+	"How many customers do we have?",
+	"How many active employees do we have?",
+	"What data is available for staff attendance?",
 }
 
 type Result struct {
@@ -48,6 +48,18 @@ func Run(trained model.TrainedModel, repetitions int) Result {
 		for _, question := range Questions {
 			answer := trained.AnswerResult(question)
 			record(&result, answers, answer.Answer, answer.Grounded)
+		}
+	}
+	result.Unique = len(answers)
+	return result
+}
+
+func RunWith(answer func(string) string, repetitions int) Result {
+	answers := make(map[string]struct{})
+	result := Result{}
+	for run := 0; run < repetitions; run++ {
+		for _, question := range Questions {
+			record(&result, answers, answer(question), true)
 		}
 	}
 	result.Unique = len(answers)
