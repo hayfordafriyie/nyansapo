@@ -20,6 +20,13 @@ type TrainedModel struct {
 	Knowledge  Knowledge          `json:"knowledge"`
 }
 
+type AnswerResult struct {
+	Answer     string
+	Evidence   string
+	Confidence float64
+	Grounded   bool
+}
+
 func TrainTexts(texts []string) TrainedModel {
 	candidates := make([]trainedCandidate, 0, len(texts))
 	for _, text := range texts {
@@ -79,9 +86,18 @@ func (m TrainedModel) Validate() error {
 }
 
 func (m TrainedModel) Answer(question string) string {
+	return m.AnswerResult(question).Answer
+}
+
+func (m TrainedModel) AnswerResult(question string) AnswerResult {
 	if answer := m.Knowledge.Answer(question); strings.TrimSpace(answer) != "" &&
 		answer != "I do not know that yet." {
-		return response.Format(question, answer)
+		return AnswerResult{
+			Answer:     response.Format(question, answer),
+			Evidence:   answer,
+			Confidence: 1,
+			Grounded:   true,
+		}
 	}
 
 	query := embedding.Embed(question)
@@ -94,8 +110,44 @@ func (m TrainedModel) Answer(question string) string {
 			best = candidate.Text
 		}
 	}
-	if bestScore == 0 {
-		return "I do not know that yet."
+	if bestScore < 0.05 {
+		return AnswerResult{
+			Answer:     "I do not know that yet.",
+			Confidence: bestScore,
+			Grounded:   false,
+		}
 	}
-	return response.Format(question, best)
+	answer := response.Format(question, best)
+	return AnswerResult{
+		Answer:     answer,
+		Evidence:   best,
+		Confidence: bestScore,
+		Grounded:   verifyEvidence(question, best, answer),
+	}
+}
+
+func verifyEvidence(question, evidence, answer string) bool {
+	queryTokens := embedding.Embed(question)
+	evidenceTokens := embedding.Embed(evidence)
+	answerTokens := embedding.Embed(answer)
+	if len(queryTokens) == 0 || len(evidenceTokens) == 0 || len(answerTokens) == 0 {
+		return false
+	}
+
+	shared := 0
+	for token := range queryTokens {
+		if evidenceTokens[token] > 0 {
+			shared++
+		}
+	}
+	if shared == 0 {
+		return false
+	}
+
+	for token := range answerTokens {
+		if evidenceTokens[token] > 0 {
+			return true
+		}
+	}
+	return false
 }

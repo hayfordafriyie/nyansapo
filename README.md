@@ -35,6 +35,17 @@ Send a question with `POST /ask`:
 curl -X POST http://localhost:8080/ask -H "Content-Type: application/json" -d "{\"question\":\"What is photosynthesis?\"}"
 ```
 
+Responses include the answer's retrieval confidence and whether the answer was
+grounded in matching training evidence:
+
+```json
+{"answer":"Put simply: Photosynthesis converts light energy into chemical energy.","confidence":0.42,"grounded":true}
+```
+
+When the question has no sufficiently related evidence, Nyansapo returns
+`"I do not know that yet."` instead of presenting an unrelated document as an
+answer.
+
 Check API health with `GET /health`:
 
 ```text
@@ -215,5 +226,7 @@ How do plants make food?
 
 Repeated questions can use different explanatory connectors, while the
 supporting facts remain grounded in your documents. This is evidence-based
-retrieval and composition, not yet a fully generative Transformer; adding one
-later would require a language model trained for text generation.
+retrieval and composition. The trained model now verifies that the selected
+evidence overlaps the question and supports the answer before marking it
+grounded. This is not yet a fully generative Transformer; adding one later
+would require a language model trained for text generation.

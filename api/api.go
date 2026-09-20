@@ -13,6 +13,7 @@ import (
 
 type Server struct {
 	answer      func(string) string
+	detailed    func(string) model.AnswerResult
 	trainedPath string
 	cache       *answerCache
 }
@@ -22,7 +23,7 @@ func NewServer(knowledge model.Knowledge) *Server {
 }
 
 func NewTrainedServer(trained model.TrainedModel) *Server {
-	return &Server{answer: trained.Answer, cache: newAnswerCache(defaultCacheCapacity)}
+	return &Server{answer: trained.Answer, detailed: trained.AnswerResult, cache: newAnswerCache(defaultCacheCapacity)}
 }
 
 func NewReloadingServer(path string) (*Server, error) {
@@ -30,7 +31,7 @@ func NewReloadingServer(path string) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Server{answer: trained.Answer, trainedPath: path, cache: newAnswerCache(defaultCacheCapacity)}, nil
+	return &Server{answer: trained.Answer, detailed: trained.AnswerResult, trainedPath: path, cache: newAnswerCache(defaultCacheCapacity)}, nil
 }
 
 type questionRequest struct {
@@ -38,7 +39,9 @@ type questionRequest struct {
 }
 
 type answerResponse struct {
-	Answer string `json:"answer"`
+	Answer     string  `json:"answer"`
+	Confidence float64 `json:"confidence,omitempty"`
+	Grounded   bool    `json:"grounded"`
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -100,10 +103,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		cacheKey += "|" + info.ModTime().UTC().String()
 	}
 
-	answer, cached := s.cache.get(cacheKey)
+	result, cached := s.cache.get(cacheKey)
 	if cached {
 		w.Header().Set("X-Cache", "HIT")
 	} else {
+		detailedFunction := s.detailed
 		answerFunction := s.answer
 		if s.trainedPath != "" {
 			trained, err := model.LoadTrained(s.trainedPath)
@@ -112,16 +116,24 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			answerFunction = trained.Answer
+			detailedFunction = trained.AnswerResult
 		}
-		answer = answerFunction(request.Question)
-		s.cache.set(cacheKey, answer)
+		if detailedFunction != nil {
+			detailed := detailedFunction(request.Question)
+			result = answerResponse{
+				Answer:     detailed.Answer,
+				Confidence: detailed.Confidence,
+				Grounded:   detailed.Grounded,
+			}
+		} else {
+			result = answerResponse{Answer: answerFunction(request.Question), Grounded: true}
+		}
+		s.cache.set(cacheKey, result)
 		w.Header().Set("X-Cache", "MISS")
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(answerResponse{
-		Answer: answer,
-	}); err != nil {
+	if err := json.NewEncoder(w).Encode(result); err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 	}
 }

@@ -24,6 +24,9 @@ func TestAsk(t *testing.T) {
 	if !strings.Contains(response.Body.String(), "A platform.") {
 		t.Fatalf("response = %q, want answer", response.Body.String())
 	}
+	if !strings.Contains(response.Body.String(), `"grounded":true`) {
+		t.Fatalf("response = %q, want grounded result", response.Body.String())
+	}
 }
 
 func TestAskUsesMemoryCache(t *testing.T) {
@@ -132,6 +135,7 @@ func TestReloadingServer(t *testing.T) {
 	if err := trained.Save(path); err != nil {
 		t.Fatal(err)
 	}
+
 	server, err := NewReloadingServer(path)
 	if err != nil {
 		t.Fatal(err)
@@ -143,5 +147,23 @@ func TestReloadingServer(t *testing.T) {
 
 	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "Ghana") {
 		t.Fatalf("status = %d, response = %q", response.Code, response.Body.String())
+	}
+}
+
+func TestTrainedServerReportsWeakRetrieval(t *testing.T) {
+	server := NewTrainedServer(model.TrainTexts([]string{
+		"Photosynthesis converts light energy into chemical energy.",
+	}))
+	request := httptest.NewRequest(http.MethodPost, "/ask", strings.NewReader(`{"question":"What is quantum physics?"}`))
+	response := httptest.NewRecorder()
+
+	server.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
+	}
+	if !strings.Contains(response.Body.String(), `"answer":"I do not know that yet."`) ||
+		strings.Contains(response.Body.String(), `"grounded":true`) {
+		t.Fatalf("response = %q, want ungrounded refusal", response.Body.String())
 	}
 }

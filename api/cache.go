@@ -7,30 +7,30 @@ const defaultCacheCapacity = 256
 type answerCache struct {
 	mu       sync.Mutex
 	capacity int
-	values   map[string]string
+	values   map[string]answerResponse
 	order    []string
 }
 
 func newAnswerCache(capacity int) *answerCache {
 	return &answerCache{
 		capacity: capacity,
-		values:   make(map[string]string),
+		values:   make(map[string]answerResponse),
 	}
 }
 
-func (c *answerCache) get(key string) (string, bool) {
+func (c *answerCache) get(key string) (answerResponse, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 
 	value, ok := c.values[key]
 	if !ok {
-		return "", false
+		return answerResponse{}, false
 	}
 	c.touch(key)
 	return value, true
 }
 
-func (c *answerCache) set(key, value string) {
+func (c *answerCache) set(key string, value answerResponse) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 

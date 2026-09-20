@@ -50,3 +50,25 @@ func TestGenericModelDoesNotReturnEmptyMetadata(t *testing.T) {
 		t.Fatal("generic model returned an empty answer")
 	}
 }
+
+func TestAnswerResultRejectsWeakRetrieval(t *testing.T) {
+	trained := TrainTexts([]string{"Photosynthesis converts light energy into chemical energy."})
+	result := trained.AnswerResult("What is quantum physics?")
+	if result.Grounded {
+		t.Fatalf("weak retrieval was marked grounded: %+v", result)
+	}
+	if result.Answer != "I do not know that yet." {
+		t.Fatalf("weak retrieval answer = %q, want refusal", result.Answer)
+	}
+}
+
+func TestAnswerResultIncludesEvidence(t *testing.T) {
+	trained := TrainTexts([]string{"Photosynthesis converts light energy into chemical energy."})
+	result := trained.AnswerResult("What is photosynthesis?")
+	if !result.Grounded {
+		t.Fatalf("supported retrieval was not grounded: %+v", result)
+	}
+	if result.Evidence == "" || result.Confidence <= 0 {
+		t.Fatalf("result missing evidence or confidence: %+v", result)
+	}
+}
