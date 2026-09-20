@@ -90,6 +90,11 @@ The watcher rebuilds `data/model.json` when it detects a file change. The API
 reloads and validates that artifact for each question, so new data becomes
 available without restarting the server.
 
+API answers are cached in memory for up to 256 questions. Responses include
+`X-Cache: MISS` for a newly computed answer and `X-Cache: HIT` for a cached
+answer. Retraining changes the model file timestamp, automatically bypassing
+old cached answers.
+
 Ask the persisted model directly:
 
 ```text

@@ -26,6 +26,21 @@ func TestAsk(t *testing.T) {
 	}
 }
 
+func TestAskUsesMemoryCache(t *testing.T) {
+	server := NewServer(model.Knowledge{Description: "A platform."})
+	first := httptest.NewRecorder()
+	server.ServeHTTP(first, httptest.NewRequest(http.MethodPost, "/ask", strings.NewReader(`{"question":"What is it?"}`)))
+	if first.Header().Get("X-Cache") != "MISS" {
+		t.Fatalf("first cache header = %q, want MISS", first.Header().Get("X-Cache"))
+	}
+
+	second := httptest.NewRecorder()
+	server.ServeHTTP(second, httptest.NewRequest(http.MethodPost, "/ask", strings.NewReader(`{"question":"What is it?"}`)))
+	if second.Header().Get("X-Cache") != "HIT" {
+		t.Fatalf("second cache header = %q, want HIT", second.Header().Get("X-Cache"))
+	}
+}
+
 func TestAskRejectsMissingQuestion(t *testing.T) {
 	server := NewServer(model.Knowledge{})
 	request := httptest.NewRequest(http.MethodPost, "/ask", strings.NewReader(`{}`))

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"os"
 	"strings"
 
 	"nyansapo/model"
@@ -13,14 +14,15 @@ import (
 type Server struct {
 	answer      func(string) string
 	trainedPath string
+	cache       *answerCache
 }
 
 func NewServer(knowledge model.Knowledge) *Server {
-	return &Server{answer: knowledge.Answer}
+	return &Server{answer: knowledge.Answer, cache: newAnswerCache(defaultCacheCapacity)}
 }
 
 func NewTrainedServer(trained model.TrainedModel) *Server {
-	return &Server{answer: trained.Answer}
+	return &Server{answer: trained.Answer, cache: newAnswerCache(defaultCacheCapacity)}
 }
 
 func NewReloadingServer(path string) (*Server, error) {
@@ -28,7 +30,7 @@ func NewReloadingServer(path string) (*Server, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Server{answer: trained.Answer, trainedPath: path}, nil
+	return &Server{answer: trained.Answer, trainedPath: path, cache: newAnswerCache(defaultCacheCapacity)}, nil
 }
 
 type questionRequest struct {
@@ -88,19 +90,37 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	answer := s.answer
+	cacheKey := request.Question
 	if s.trainedPath != "" {
-		trained, err := model.LoadTrained(s.trainedPath)
+		info, err := os.Stat(s.trainedPath)
 		if err != nil {
 			http.Error(w, "trained model unavailable", http.StatusServiceUnavailable)
 			return
 		}
-		answer = trained.Answer
+		cacheKey += "|" + info.ModTime().UTC().String()
+	}
+
+	answer, cached := s.cache.get(cacheKey)
+	if cached {
+		w.Header().Set("X-Cache", "HIT")
+	} else {
+		answerFunction := s.answer
+		if s.trainedPath != "" {
+			trained, err := model.LoadTrained(s.trainedPath)
+			if err != nil {
+				http.Error(w, "trained model unavailable", http.StatusServiceUnavailable)
+				return
+			}
+			answerFunction = trained.Answer
+		}
+		answer = answerFunction(request.Question)
+		s.cache.set(cacheKey, answer)
+		w.Header().Set("X-Cache", "MISS")
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(answerResponse{
-		Answer: answer(request.Question),
+		Answer: answer,
 	}); err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 	}
