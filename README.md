@@ -65,6 +65,16 @@ go run . train path/to/new-data
 Add new reader adapters in `pipeline/` for formats such as Parquet without
 changing the model or API layers.
 
+For automatic retraining whenever supported files are added or changed, run:
+
+```text
+go run . watch data/input
+```
+
+The watcher rebuilds `data/model.json` when it detects a file change. Keep the
+API running separately; restart it after retraining or add a reload endpoint
+when moving to a multi-process deployment.
+
 Ask the persisted model directly:
 
 ```text

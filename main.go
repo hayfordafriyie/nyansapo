@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"mini-llm/model"
 	"mini-llm/pipeline"
@@ -14,6 +15,17 @@ import (
 func main() {
 	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "serve") {
 		if err := runServer(); err != nil {
+			panic(err)
+		}
+		return
+	}
+
+	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "watch") {
+		source := "data/input"
+		if len(os.Args) > 2 {
+			source = os.Args[2]
+		}
+		if err := watchTraining(source); err != nil {
 			panic(err)
 		}
 		return
@@ -105,4 +117,51 @@ func trainFrom(source string, knowledge model.Knowledge) (model.TrainedModel, er
 		return model.TrainedModel{}, fmt.Errorf("training source %s does not exist: %w", source, err)
 	}
 	return model.Train(knowledge), nil
+}
+
+func watchTraining(source string) error {
+	knowledge, err := model.LoadKnowledge("data/knowledge.json")
+	if err != nil && !os.IsNotExist(err) {
+		return err
+	}
+	var previous string
+	for {
+		fingerprint, err := sourceFingerprint(source)
+		if err != nil {
+			return err
+		}
+		if fingerprint != previous {
+			trained, err := trainFrom(source, knowledge)
+			if err != nil {
+				return err
+			}
+			if err := trained.Save("data/model.json"); err != nil {
+				return err
+			}
+			fmt.Printf("trained %d documents from %s\n", len(trained.Candidates), source)
+			previous = fingerprint
+		}
+		time.Sleep(5 * time.Second)
+	}
+}
+
+func sourceFingerprint(root string) (string, error) {
+	var parts []string
+	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		switch strings.ToLower(filepath.Ext(path)) {
+		case ".txt", ".md", ".markdown", ".json", ".csv":
+			parts = append(parts, fmt.Sprintf("%s:%d:%d", path, info.Size(), info.ModTime().UnixNano()))
+		}
+		return nil
+	})
+	if err != nil {
+		return "", fmt.Errorf("fingerprint training source: %w", err)
+	}
+	return strings.Join(parts, "|"), nil
 }
