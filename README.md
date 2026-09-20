@@ -184,6 +184,13 @@ This runs 20 varied subject questions 10 times (200 total), reporting unknown
 answers, empty answers, and unique response count. It measures the current
 retrieval/response system; repeated evaluation does not retrain neural weights.
 
+With the API running in another terminal, run the same 200-query evaluation
+through HTTP:
+
+```text
+go run . evaluate-api
+```
+
 ## Evidence-based answers
 
 The retrieval model first finds the most relevant trained passage. The response

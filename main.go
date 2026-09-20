@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -57,6 +58,15 @@ func main() {
 	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "evaluate") {
 		result := evaluation.Run(trained, 10)
 		fmt.Printf("queries: %d\nunknown: %d\nempty: %d\nunique answers: %d\n", result.Total, result.Unknown, result.Empty, result.Unique)
+		return
+	}
+
+	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "evaluate-api") {
+		result, err := evaluation.RunAPI(http.DefaultClient, "http://localhost:8080/ask", 10)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("API queries: %d\nAPI unknown: %d\nAPI empty: %d\nAPI unique answers: %d\n", result.Total, result.Unknown, result.Empty, result.Unique)
 		return
 	}
 
