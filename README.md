@@ -96,8 +96,8 @@ Ask the persisted model directly:
 go run . ask-trained Tell me about school management
 ```
 
-If `data/model.json` is not present, the regular CLI commands use the source
-knowledge directly. Run `go run . train` to enable persisted-model inference.
+Run `go run . train` before using the CLI or API. The application now uses
+only documents under `data/input`; there is no legacy knowledge-file fallback.
 
 ## Add data and test training
 
