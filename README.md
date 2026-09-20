@@ -42,3 +42,9 @@ Ask one question without the interactive prompt:
 ```text
 go run . ask What is EDSPiKE?
 ```
+
+Build a persisted retrieval model from the knowledge file:
+
+```text
+go run . train
+```

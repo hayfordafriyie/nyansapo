@@ -1,0 +1,43 @@
+{
+  "candidates": [
+    {
+      "text": "EDSPiKE is a school management and learning platform.",
+      "vector": {
+        "and": 1,
+        "edspike": 1,
+        "learning": 1,
+        "management": 1,
+        "platform": 1,
+        "school": 1
+      }
+    },
+    {
+      "text": "Student management",
+      "vector": {
+        "management": 1,
+        "student": 1
+      }
+    },
+    {
+      "text": "Teacher management",
+      "vector": {
+        "management": 1,
+        "teacher": 1
+      }
+    },
+    {
+      "text": "School management",
+      "vector": {
+        "management": 1,
+        "school": 1
+      }
+    },
+    {
+      "text": "Learning management",
+      "vector": {
+        "learning": 1,
+        "management": 1
+      }
+    }
+  ]
+}

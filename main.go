@@ -22,6 +22,14 @@ func main() {
 		panic(err)
 	}
 
+	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "train") {
+		if err := model.Train(knowledge).Save("data/model.json"); err != nil {
+			panic(err)
+		}
+		fmt.Println("trained model saved to data/model.json")
+		return
+	}
+
 	if len(os.Args) > 2 && strings.EqualFold(os.Args[1], "ask") {
 		fmt.Println(knowledge.Answer(strings.Join(os.Args[2:], " ")))
 		return
