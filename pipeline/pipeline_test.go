@@ -3,6 +3,7 @@ package pipeline
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -78,5 +79,22 @@ func TestLoadJSONArrayCreatesSearchableDocuments(t *testing.T) {
 	}
 	if len(documents) != 2 {
 		t.Fatalf("got %d documents, want one per catalog entry", len(documents))
+	}
+}
+
+func TestLoadCatalogJSONCreatesOneDocumentPerTable(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "catalog.json")
+	content := `{"tables":[{"name":"customers","columns":[{"name":"id","type":"bigint"}]},{"name":"orders","columns":[{"name":"customer_id","type":"bigint"}]}]}`
+	if err := os.WriteFile(path, []byte(content), 0600); err != nil {
+		t.Fatal(err)
+	}
+
+	documents, err := New().Load(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(documents) != 2 || !strings.Contains(documents[0].Text, "customers") {
+		t.Fatalf("documents = %+v, want one labeled document per table", documents)
 	}
 }

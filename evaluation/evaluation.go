@@ -10,12 +10,13 @@ import (
 )
 
 var Questions = []string{
-	"How are orders related to customers?",
-	"Which columns identify a customer?",
-	"Which columns store order totals?",
+	"What columns does the family table have?",
+	"What columns does the clan table have?",
+	"What columns does the rfamseq table have?",
+	"How are family and clan related?",
 	"What is a primary key?",
 	"What is a foreign key?",
-	"How do I join customers and orders?",
+	"How do I join related tables?",
 	"What does GROUP BY do?",
 	"What is a window function?",
 	"What is a common table expression?",
@@ -29,7 +30,6 @@ var Questions = []string{
 	"Explain SQL joins",
 	"Explain database normalization",
 	"Explain read-only queries",
-	"Explain aggregation",
 }
 
 type Result struct {

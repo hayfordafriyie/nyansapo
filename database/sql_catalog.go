@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 )
 
 type Queryer interface {
@@ -28,7 +29,13 @@ func IntrospectSQL(ctx context.Context, db Queryer, provider Provider, databaseN
 		AND ($1 = '' OR table_schema = $1)
 		ORDER BY table_schema, table_name`
 	}
-	rows, err := db.QueryContext(ctx, tableQuery, schemaName, schemaName)
+	var rows *sql.Rows
+	var err error
+	if provider == ProviderPostgreSQL {
+		rows, err = db.QueryContext(ctx, tableQuery, schemaName)
+	} else {
+		rows, err = db.QueryContext(ctx, tableQuery, schemaName, schemaName)
+	}
 	if err != nil {
 		return Catalog{}, fmt.Errorf("list tables: %w", err)
 	}
@@ -40,8 +47,12 @@ func IntrospectSQL(ctx context.Context, db Queryer, provider Provider, databaseN
 		if err := rows.Scan(&table.Schema, &table.Name); err != nil {
 			return Catalog{}, fmt.Errorf("scan table: %w", err)
 		}
+		if isSystemSchema(provider, table.Schema) {
+			continue
+		}
 		catalog.Tables = append(catalog.Tables, table)
 	}
+
 	if err := rows.Err(); err != nil {
 		return Catalog{}, fmt.Errorf("read tables: %w", err)
 	}
@@ -58,6 +69,14 @@ func IntrospectSQL(ctx context.Context, db Queryer, provider Provider, databaseN
 	return catalog, nil
 }
 
+func isSystemSchema(provider Provider, schema string) bool {
+	schema = strings.ToLower(schema)
+	if provider == ProviderPostgreSQL {
+		return schema == "information_schema" || schema == "pg_catalog" || strings.HasPrefix(schema, "pg_toast")
+	}
+	return schema == "information_schema" || schema == "performance_schema" || schema == "mysql" || schema == "sys"
+}
+
 func loadForeignKeys(ctx context.Context, db Queryer, provider Provider, table *Table) error {
 	query := `
 		SELECT column_name, referenced_table_schema, referenced_table_name, referenced_column_name
@@ -65,9 +84,12 @@ func loadForeignKeys(ctx context.Context, db Queryer, provider Provider, table *
 		WHERE table_schema = ? AND table_name = ? AND referenced_table_name IS NOT NULL`
 	if provider == ProviderPostgreSQL {
 		query = `
-		SELECT column_name, referenced_table_schema, referenced_table_name, referenced_column_name
-		FROM information_schema.key_column_usage
-		WHERE table_schema = $1 AND table_name = $2 AND referenced_table_name IS NOT NULL`
+		SELECT kcu.column_name, ccu.table_schema, ccu.table_name, ccu.column_name
+		FROM information_schema.key_column_usage kcu
+		JOIN information_schema.constraint_column_usage ccu
+		  ON kcu.constraint_name = ccu.constraint_name
+		 AND kcu.constraint_schema = ccu.constraint_schema
+		WHERE kcu.table_schema = $1 AND kcu.table_name = $2`
 	}
 	rows, err := db.QueryContext(ctx, query, table.Schema, table.Name)
 	if err != nil {

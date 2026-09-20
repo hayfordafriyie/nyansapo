@@ -1,0 +1,7 @@
+{
+  "provider": "postgres",
+  "name": "",
+  "database": "pfmegrnargs",
+  "tables": null,
+  "collections": null
+}

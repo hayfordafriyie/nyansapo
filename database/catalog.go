@@ -6,44 +6,44 @@ import (
 )
 
 type Catalog struct {
-	Provider    Provider
-	Name        string
-	Database    string
-	Tables      []Table
-	Collections []Collection
+	Provider    Provider     `json:"provider"`
+	Name        string       `json:"name"`
+	Database    string       `json:"database"`
+	Tables      []Table      `json:"tables"`
+	Collections []Collection `json:"collections"`
 }
 
 type Table struct {
-	Schema      string
-	Name        string
-	Columns     []Column
-	PrimaryKey  []string
-	ForeignKeys []ForeignKey
+	Schema      string       `json:"schema"`
+	Name        string       `json:"name"`
+	Columns     []Column     `json:"columns"`
+	PrimaryKey  []string     `json:"primary_key"`
+	ForeignKeys []ForeignKey `json:"foreign_keys"`
 }
 
 type Column struct {
-	Name       string
-	Type       string
-	Nullable   bool
-	Default    string
-	PrimaryKey bool
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	Nullable   bool   `json:"nullable"`
+	Default    string `json:"default"`
+	PrimaryKey bool   `json:"primary_key"`
 }
 
 type ForeignKey struct {
-	Column           string
-	ReferencedSchema string
-	ReferencedTable  string
-	ReferencedColumn string
+	Column           string `json:"column"`
+	ReferencedSchema string `json:"referenced_schema"`
+	ReferencedTable  string `json:"referenced_table"`
+	ReferencedColumn string `json:"referenced_column"`
 }
 
 type Collection struct {
-	Name   string
-	Fields []Field
+	Name   string  `json:"name"`
+	Fields []Field `json:"fields"`
 }
 
 type Field struct {
-	Path string
-	Type string
+	Path string `json:"path"`
+	Type string `json:"type"`
 }
 
 func (c Catalog) Documents() []string {

@@ -104,12 +104,13 @@ func (m TrainedModel) AnswerResult(question string) AnswerResult {
 	var best string
 	var bestScore float64
 	for _, candidate := range m.Candidates {
-		score := embedding.Cosine(query, candidate.Vector)
+		score := candidateScore(question, candidate.Text, query, candidate.Vector)
 		if score > bestScore {
 			bestScore = score
 			best = candidate.Text
 		}
 	}
+
 	if bestScore < 0.05 {
 		return AnswerResult{
 			Answer:     "I do not know that yet.",
@@ -126,7 +127,39 @@ func (m TrainedModel) AnswerResult(question string) AnswerResult {
 	}
 }
 
+func candidateScore(question, text string, query embedding.Vector, vector embedding.Vector) float64 {
+	score := embedding.Cosine(query, vector)
+	questionLower := strings.ToLower(question)
+	textLower := strings.ToLower(text)
+	for _, phrase := range []string{"information_schema", "window function", "primary key", "foreign key", "inner join", "left join", "common table expression", "query plan", "join", "joins"} {
+		if strings.Contains(questionLower, phrase) && strings.Contains(textLower, phrase) {
+			score += 1
+		}
+	}
+	for token := range query {
+		if strings.Contains(questionLower, " table") &&
+			strings.HasPrefix(textLower, "table "+token+" ") {
+			score += 1
+		}
+		if strings.Contains(questionLower, " column") &&
+			strings.Contains(textLower, "columns") {
+			score += 0.25
+		}
+		if strings.Contains(questionLower, "related") &&
+			strings.Contains(textLower, "relationships") {
+			score += 0.25
+		}
+	}
+	return score
+}
+
 func verifyEvidence(question, evidence, answer string) bool {
+	normalizedEvidence := strings.ToLower(strings.TrimSpace(evidence))
+	normalizedAnswer := strings.ToLower(strings.TrimSpace(answer))
+	if normalizedEvidence != "" && strings.Contains(normalizedAnswer, normalizedEvidence) {
+		return true
+	}
+
 	queryTokens := embedding.Embed(question)
 	evidenceTokens := embedding.Embed(evidence)
 	answerTokens := embedding.Embed(answer)

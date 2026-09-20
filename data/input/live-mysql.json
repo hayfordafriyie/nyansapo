@@ -1,0 +1,4130 @@
+{
+  "provider": "mysql",
+  "name": "",
+  "database": "Rfam",
+  "tables": [
+    {
+      "schema": "Rfam",
+      "name": "_annotated_file",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "seed",
+          "type": "longblob",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cm",
+          "type": "longblob",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "full",
+          "type": "longblob",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "_family_file",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "seed",
+          "type": "longblob",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cm",
+          "type": "longblob",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "_genome_data",
+      "columns": [
+        {
+          "name": "data_file",
+          "type": "mediumtext",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "author",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "uuid",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "created",
+          "type": "datetime",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "opened",
+          "type": "datetime",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "closed",
+          "type": "datetime",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "message",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "lsf_id",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "_lock",
+      "columns": [
+        {
+          "name": "locked",
+          "type": "tinyint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "locker",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "allowCommits",
+          "type": "tinyint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "alsoAllow",
+          "type": "text",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "_overlap",
+      "columns": [
+        {
+          "name": "auto_overlap",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "id",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "description",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "author",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "comment",
+          "type": "longtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "_overlap_membership",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "auto_overlap",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        },
+        {
+          "column": "auto_overlap",
+          "referenced_schema": "Rfam",
+          "referenced_table": "_overlap",
+          "referenced_column": "auto_overlap"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "_post_process",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "author",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "uuid",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "status",
+          "type": "enum",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "created",
+          "type": "datetime",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "opened",
+          "type": "datetime",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "closed",
+          "type": "datetime",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "message",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "lsf_id",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "alignment_and_tree",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "type",
+          "type": "enum",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "alignment",
+          "type": "longblob",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "tree",
+          "type": "longblob",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "treemethod",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "average_length",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "percent_id",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "number_of_sequences",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "author",
+      "columns": [
+        {
+          "name": "author_id",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "name",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "last_name",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "initials",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "orcid",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "synonyms",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "clan",
+      "columns": [
+        {
+          "name": "clan_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "id",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "previous_id",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "description",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "author",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "comment",
+          "type": "longtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "created",
+          "type": "datetime",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "updated",
+          "type": "timestamp",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "clan_database_link",
+      "columns": [
+        {
+          "name": "clan_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "db_id",
+          "type": "tinytext",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "comment",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "db_link",
+          "type": "tinytext",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "other_params",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "clan_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "clan",
+          "referenced_column": "clan_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "clan_literature_reference",
+      "columns": [
+        {
+          "name": "clan_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pmid",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "comment",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "order_added",
+          "type": "tinyint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "clan_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "clan",
+          "referenced_column": "clan_acc"
+        },
+        {
+          "column": "pmid",
+          "referenced_schema": "Rfam",
+          "referenced_table": "literature_reference",
+          "referenced_column": "pmid"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "clan_membership",
+      "columns": [
+        {
+          "name": "clan_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "clan_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "clan",
+          "referenced_column": "clan_acc"
+        },
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "database_link",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "db_id",
+          "type": "tinytext",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "comment",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "db_link",
+          "type": "tinytext",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "other_params",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "db_version",
+      "columns": [
+        {
+          "name": "rfam_release",
+          "type": "double",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfam_release_date",
+          "type": "datetime",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "number_families",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "embl_release",
+          "type": "tinytext",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "genome_collection_date",
+          "type": "datetime",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "refseq_version",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_date",
+          "type": "datetime",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "infernal_version",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "dead_clan",
+      "columns": [
+        {
+          "name": "clan_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "clan_id",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "comment",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "forward_to",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "user",
+          "type": "tinytext",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "dead_family",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfam_id",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "comment",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "forward_to",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "title",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "user",
+          "type": "tinytext",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "ensembl_names",
+      "columns": [
+        {
+          "name": "insdc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ensembl",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "family",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfam_id",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "auto_wiki",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "description",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "author",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "seed_source",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "gathering_cutoff",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "trusted_cutoff",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "noise_cutoff",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "comment",
+          "type": "longtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "previous_id",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cmbuild",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cmcalibrate",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cmsearch",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "num_seed",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "num_full",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "num_genome_seq",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "num_refseq",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "type",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "structure_source",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "number_of_species",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "number_3d_structures",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "num_pseudonokts",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "tax_seed",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ecmli_lambda",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ecmli_mu",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ecmli_cal_db",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "ecmli_cal_hits",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "maxl",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "clen",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "match_pair_node",
+          "type": "tinyint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "hmm_tau",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "hmm_lambda",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "created",
+          "type": "datetime",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "updated",
+          "type": "timestamp",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "auto_wiki",
+          "referenced_schema": "Rfam",
+          "referenced_table": "wikitext",
+          "referenced_column": "auto_wiki"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "family_author",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "author_id",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "desc_order",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "family_literature_reference",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pmid",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "comment",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "order_added",
+          "type": "tinyint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        },
+        {
+          "column": "pmid",
+          "referenced_schema": "Rfam",
+          "referenced_table": "literature_reference",
+          "referenced_column": "pmid"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "family_long",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "referenece_structure",
+          "type": "longtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "reference_sequence",
+          "type": "longtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "family_ncbi",
+      "columns": [
+        {
+          "name": "ncbi_id",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfam_id",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "ncbi_id",
+          "referenced_schema": "Rfam",
+          "referenced_table": "taxonomy",
+          "referenced_column": "ncbi_id"
+        },
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "features",
+      "columns": [
+        {
+          "name": "rfamseq_acc",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "database_id",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "primary_id",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "secondary_id",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "feat_orient",
+          "type": "tinyint",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "feat_start",
+          "type": "bigint",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "feat_end",
+          "type": "bigint",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "quaternary_id",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfamseq_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "rfamseq",
+          "referenced_column": "rfamseq_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "full_region",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfamseq_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "seq_start",
+          "type": "bigint",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "seq_end",
+          "type": "bigint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "bit_score",
+          "type": "double",
+          "nullable": false,
+          "default": "0.00",
+          "primary_key": false
+        },
+        {
+          "name": "evalue_score",
+          "type": "varchar",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "cm_start",
+          "type": "mediumint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cm_end",
+          "type": "mediumint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "truncated",
+          "type": "enum",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "type",
+          "type": "enum",
+          "nullable": false,
+          "default": "full",
+          "primary_key": false
+        },
+        {
+          "name": "is_significant",
+          "type": "tinyint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        },
+        {
+          "column": "rfamseq_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "rfamseq",
+          "referenced_column": "rfamseq_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "genome",
+      "columns": [
+        {
+          "name": "upid",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "assembly_acc",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "assembly_version",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "wgs_acc",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "wgs_version",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "assembly_name",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "assembly_level",
+          "type": "enum",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "study_ref",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "description",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "total_length",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ungapped_length",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "circular",
+          "type": "tinyint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ncbi_id",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "scientific_name",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "common_name",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "kingdom",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "num_rfam_regions",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "num_families",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "is_reference",
+          "type": "tinyint",
+          "nullable": false,
+          "default": "1",
+          "primary_key": false
+        },
+        {
+          "name": "is_representative",
+          "type": "tinyint",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "created",
+          "type": "datetime",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "updated",
+          "type": "timestamp",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "genome_temp",
+      "columns": [
+        {
+          "name": "upid",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "assembly_acc",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "assembly_version",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "wgs_acc",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "wgs_version",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "assembly_name",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "assembly_level",
+          "type": "enum",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "study_ref",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "description",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "total_length",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ungapped_length",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "circular",
+          "type": "tinyint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ncbi_id",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "scientific_name",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "common_name",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "kingdom",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "num_rfam_regions",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "num_families",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "is_reference",
+          "type": "tinyint",
+          "nullable": false,
+          "default": "1",
+          "primary_key": false
+        },
+        {
+          "name": "is_representative",
+          "type": "tinyint",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "created",
+          "type": "datetime",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "updated",
+          "type": "timestamp",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "genseq",
+      "columns": [
+        {
+          "name": "upid",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfamseq_acc",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "chromosome_name",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "chromosome_type",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "version",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "genseq_temp",
+      "columns": [
+        {
+          "name": "upid",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfamseq_acc",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "chromosome_name",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "chromosome_type",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "version",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "html_alignment",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "type",
+          "type": "enum",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "html",
+          "type": "longblob",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "block",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "html_alignmentscol",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "keywords",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfam_id",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "description",
+          "type": "varchar",
+          "nullable": true,
+          "default": "NULL",
+          "primary_key": false
+        },
+        {
+          "name": "rfam_general",
+          "type": "longtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "literature",
+          "type": "longtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "wiki",
+          "type": "longtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_mappings",
+          "type": "longtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "clan_info",
+          "type": "longtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "literature_reference",
+      "columns": [
+        {
+          "name": "pmid",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "title",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "author",
+          "type": "text",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "journal",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "matches_and_fasta",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "match_list",
+          "type": "longblob",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "fasta",
+          "type": "longblob",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "type",
+          "type": "enum",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "motif",
+      "columns": [
+        {
+          "name": "motif_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "motif_id",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "description",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "author",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "seed_source",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "gathering_cutoff",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "trusted_cutoff",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "noise_cutoff",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cmbuild",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cmcalibrate",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "type",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "num_seed",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "average_id",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "average_sqlen",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ecmli_lambda",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ecmli_mu",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ecmli_cal_db",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "ecmli_cal_hits",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "maxl",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "clen",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "match_pair_node",
+          "type": "tinyint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "hmm_tau",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "hmm_lambda",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "wiki",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "created",
+          "type": "datetime",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "updated",
+          "type": "timestamp",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "motif_database_link",
+      "columns": [
+        {
+          "name": "motif_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "db_id",
+          "type": "tinytext",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "comment",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "db_link",
+          "type": "tinytext",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "other_params",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "motif_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "motif",
+          "referenced_column": "motif_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "motif_family_stats",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "motif_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "num_hits",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "frac_hits",
+          "type": "decimal",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "sum_bits",
+          "type": "decimal",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "avg_weight_bits",
+          "type": "decimal",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "motif_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "motif_old",
+          "referenced_column": "motif_acc"
+        },
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "motif_file",
+      "columns": [
+        {
+          "name": "motif_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "seed",
+          "type": "longblob",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cm",
+          "type": "longblob",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "motif_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "motif",
+          "referenced_column": "motif_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "motif_literature",
+      "columns": [
+        {
+          "name": "motif_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pmid",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "comment",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "order_added",
+          "type": "tinyint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "motif_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "motif_old",
+          "referenced_column": "motif_acc"
+        },
+        {
+          "column": "pmid",
+          "referenced_schema": "Rfam",
+          "referenced_table": "literature_reference",
+          "referenced_column": "pmid"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "motif_matches",
+      "columns": [
+        {
+          "name": "motif_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfamseq_acc",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfamseq_start",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfamseq_stop",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "query_start",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "query_stop",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "motif_start",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "motif_stop",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "e_value",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "bit_score",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "motif_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "motif_old",
+          "referenced_column": "motif_acc"
+        },
+        {
+          "column": "rfamseq_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "rfamseq",
+          "referenced_column": "rfamseq_acc"
+        },
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "motif_old",
+      "columns": [
+        {
+          "name": "motif_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "motif_id",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "description",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "author",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "seed_source",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "gathering_cutoff",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "trusted_cutoff",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "noise_cutoff",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cmbuild",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cmcalibrate",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "type",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ecmli_lambda",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ecmli_mu",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ecmli_cal_db",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "ecmli_cal_hits",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "maxl",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "clen",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "match_pair_node",
+          "type": "tinyint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "hmm_tau",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "hmm_lambda",
+          "type": "double",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "created",
+          "type": "datetime",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "updated",
+          "type": "timestamp",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "motif_pdb",
+      "columns": [
+        {
+          "name": "motif_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_id",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "chain",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_start",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_end",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "motif_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "motif_old",
+          "referenced_column": "motif_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "motif_ss_image",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "motif_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "image",
+          "type": "longblob",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        },
+        {
+          "column": "motif_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "motif_old",
+          "referenced_column": "motif_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "pdb",
+      "columns": [
+        {
+          "name": "pdb_id",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "keywords",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "title",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "date",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "resolution",
+          "type": "decimal",
+          "nullable": true,
+          "default": "0.00",
+          "primary_key": false
+        },
+        {
+          "name": "method",
+          "type": "tinytext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "author",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "pdb_full_region",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_id",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "chain",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_start",
+          "type": "mediumint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_end",
+          "type": "mediumint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "bit_score",
+          "type": "double",
+          "nullable": false,
+          "default": "0.00",
+          "primary_key": false
+        },
+        {
+          "name": "evalue_score",
+          "type": "varchar",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "cm_start",
+          "type": "mediumint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cm_end",
+          "type": "mediumint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "hex_colour",
+          "type": "varchar",
+          "nullable": true,
+          "default": "NULL",
+          "primary_key": false
+        },
+        {
+          "name": "is_significant",
+          "type": "tinyint",
+          "nullable": false,
+          "default": "1",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "pdb_full_region_old",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_id",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "chain",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_start",
+          "type": "mediumint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_end",
+          "type": "mediumint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "bit_score",
+          "type": "double",
+          "nullable": false,
+          "default": "0.00",
+          "primary_key": false
+        },
+        {
+          "name": "evalue_score",
+          "type": "varchar",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "cm_start",
+          "type": "mediumint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cm_end",
+          "type": "mediumint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "hex_colour",
+          "type": "varchar",
+          "nullable": true,
+          "default": "NULL",
+          "primary_key": false
+        },
+        {
+          "name": "is_significant",
+          "type": "tinyint",
+          "nullable": false,
+          "default": "1",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "pdb_rfam_reg",
+      "columns": [
+        {
+          "name": "auto_pdb_reg",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_seq",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_id",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "chain",
+          "type": "varchar",
+          "nullable": true,
+          "default": "NULL",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_res_start",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_res_end",
+          "type": "mediumint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfamseq_acc",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "seq_start",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "seq_end",
+          "type": "bigint",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "hex_colour",
+          "type": "varchar",
+          "nullable": true,
+          "default": "NULL",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        },
+        {
+          "column": "pdb_id",
+          "referenced_schema": "Rfam",
+          "referenced_table": "pdb",
+          "referenced_column": "pdb_id"
+        },
+        {
+          "column": "pdb_seq",
+          "referenced_schema": "Rfam",
+          "referenced_table": "pdb_sequence",
+          "referenced_column": "pdb_seq"
+        },
+        {
+          "column": "rfamseq_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "rfamseq",
+          "referenced_column": "rfamseq_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "pdb_sequence",
+      "columns": [
+        {
+          "name": "pdb_seq",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pdb_id",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "chain",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "pdb_id",
+          "referenced_schema": "Rfam",
+          "referenced_table": "pdb",
+          "referenced_column": "pdb_id"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "processed_data",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cm",
+          "type": "longblob",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ss_stats_pbp",
+          "type": "longblob",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ss_stats_seq",
+          "type": "longblob",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ss_stats_fam",
+          "type": "longblob",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "scores_graph",
+          "type": "longblob",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "genome_full",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "genome_full_md5",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "refseq_full",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "refseq_full_md5",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "pseudoknot",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "pseudoknot_id",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "source",
+          "type": "enum",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "covariation",
+          "type": "tinyint",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "refseq",
+      "columns": [
+        {
+          "name": "refseq_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "description",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "species",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ncbi_taxid",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "refseq_full_region",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "refseq_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "seq_start",
+          "type": "bigint",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "seq_end",
+          "type": "bigint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "bit_score",
+          "type": "double",
+          "nullable": false,
+          "default": "0.00",
+          "primary_key": false
+        },
+        {
+          "name": "evalue_score",
+          "type": "varchar",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "cm_start",
+          "type": "mediumint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "cm_end",
+          "type": "mediumint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "truncated",
+          "type": "enum",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        },
+        {
+          "column": "refseq_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "refseq",
+          "referenced_column": "refseq_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "rfamseq",
+      "columns": [
+        {
+          "name": "rfamseq_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "accession",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "version",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ncbi_id",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "mol_type",
+          "type": "enum",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "length",
+          "type": "int",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "description",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "previous_acc",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "source",
+          "type": "char",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "ncbi_id",
+          "referenced_schema": "Rfam",
+          "referenced_table": "taxonomy",
+          "referenced_column": "ncbi_id"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "rfamseq_temp",
+      "columns": [
+        {
+          "name": "rfamseq_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "accession",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "version",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ncbi_id",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "mol_type",
+          "type": "enum",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "length",
+          "type": "int",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "description",
+          "type": "longtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "previous_acc",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "source",
+          "type": "char",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "rnacentral_matches",
+      "columns": [
+        {
+          "name": "rfamseq_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "seq_start",
+          "type": "bigint",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "seq_end",
+          "type": "bigint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "md5",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rnacentral_id",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "type",
+          "type": "enum",
+          "nullable": true,
+          "default": "full",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "rscape_annotations",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "F",
+          "type": "float",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "sensitivity",
+          "type": "float",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "ppv",
+          "type": "float",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "true",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "found",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "tp",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "avgid",
+          "type": "float",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "alen",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "nseq",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "secondary_structure_image",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "type",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "image",
+          "type": "longblob",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "seed_region",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfamseq_acc",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "seq_start",
+          "type": "bigint",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "seq_end",
+          "type": "bigint",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "md5",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        },
+        {
+          "column": "rfamseq_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "rfamseq",
+          "referenced_column": "rfamseq_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "sunburst",
+      "columns": [
+        {
+          "name": "rfam_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "data",
+          "type": "longblob",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "type",
+          "type": "enum",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": [
+        {
+          "column": "rfam_acc",
+          "referenced_schema": "Rfam",
+          "referenced_table": "family",
+          "referenced_column": "rfam_acc"
+        }
+      ]
+    },
+    {
+      "schema": "Rfam",
+      "name": "taxonomic_tree",
+      "columns": [
+        {
+          "name": "ncbi_code",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "species",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "taxonomy",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "lft",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rgt",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "parent",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "level",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "taxonomy",
+      "columns": [
+        {
+          "name": "ncbi_id",
+          "type": "int",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "species",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "tax_string",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "tree_display_name",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "align_display_name",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "taxonomy_websearch",
+      "columns": [
+        {
+          "name": "ncbi_id",
+          "type": "int",
+          "nullable": true,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "species",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rgt",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "taxonomy",
+          "type": "mediumtext",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "lft",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "parent",
+          "type": "int",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "level",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "minimal",
+          "type": "tinyint",
+          "nullable": false,
+          "default": "0",
+          "primary_key": false
+        },
+        {
+          "name": "rank",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "unique_genseq",
+      "columns": [
+        {
+          "name": "upid",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfamseq_acc",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "chromosome_name",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "chromosome_type",
+          "type": "varchar",
+          "nullable": true,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "version",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "genseq_id",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "version",
+      "columns": [
+        {
+          "name": "rfam_release_date",
+          "type": "date",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "number_families",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "embl_release",
+          "type": "tinytext",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "rfam_release",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    },
+    {
+      "schema": "Rfam",
+      "name": "wikitext",
+      "columns": [
+        {
+          "name": "auto_wiki",
+          "type": "int",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        },
+        {
+          "name": "title",
+          "type": "varchar",
+          "nullable": false,
+          "default": "",
+          "primary_key": false
+        }
+      ],
+      "primary_key": null,
+      "foreign_keys": null
+    }
+  ],
+  "collections": null
+}
