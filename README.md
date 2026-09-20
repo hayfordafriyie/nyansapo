@@ -6,6 +6,9 @@ tables, columns, relationships, joins, indexes, and database operations. The
 current model is retrieval-based; it does not silently mutate a database or
 invent a query result.
 
+Built and maintained by **Hayford Afriyie** — [hayfordafriyie.com](https://hayfordafriyie.com).
+Nyansapo is open source under the [MIT License](LICENSE).
+
 Run it from the project root:
 
 ```text
