@@ -1,8 +1,9 @@
 # Mini LLM
 
 A small Go knowledge assistant that loads EDSPiKE information from JSON,
-tokenizes questions, and answers with direct knowledge lookup or simple
-vector-similarity search.
+tokenizes questions, and answers with direct knowledge lookup or vector-
+similarity search. After training, the CLI and API use the same persisted
+model.
 
 Run it from the project root:
 
@@ -57,3 +58,6 @@ Ask the persisted model directly:
 ```text
 go run . ask-trained Tell me about school management
 ```
+
+If `data/model.json` is not present, the regular CLI commands use the source
+knowledge directly. Run `go run . train` to enable persisted-model inference.

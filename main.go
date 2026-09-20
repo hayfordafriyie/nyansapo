@@ -30,6 +30,13 @@ func main() {
 		return
 	}
 
+	answer := knowledge.Answer
+	if trained, err := model.LoadTrained("data/model.json"); err == nil {
+		answer = trained.Answer
+	} else if !os.IsNotExist(err) {
+		panic(err)
+	}
+
 	if len(os.Args) > 2 && strings.EqualFold(os.Args[1], "ask-trained") {
 		trained, err := model.LoadTrained("data/model.json")
 		if err != nil {
@@ -40,7 +47,7 @@ func main() {
 	}
 
 	if len(os.Args) > 2 && strings.EqualFold(os.Args[1], "ask") {
-		fmt.Println(knowledge.Answer(strings.Join(os.Args[2:], " ")))
+		fmt.Println(answer(strings.Join(os.Args[2:], " ")))
 		return
 	}
 
@@ -58,6 +65,6 @@ func main() {
 			break
 		}
 
-		fmt.Println(knowledge.Answer(question))
+		fmt.Println(answer(question))
 	}
 }
