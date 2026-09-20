@@ -49,11 +49,21 @@ Ask one question without the interactive prompt:
 go run . ask What is EDSPiKE?
 ```
 
-Build a persisted retrieval model from the knowledge file:
+Build a persisted retrieval model from all supported files in `data/input`:
 
 ```text
 go run . train
 ```
+
+The pipeline currently reads `.txt`, `.md`, `.json`, and `.csv` files
+recursively. You can provide another directory:
+
+```text
+go run . train path/to/new-data
+```
+
+Add new reader adapters in `pipeline/` for formats such as Parquet without
+changing the model or API layers.
 
 Ask the persisted model directly:
 

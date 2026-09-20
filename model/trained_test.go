@@ -36,3 +36,10 @@ func TestValidateRejectsEmptyModel(t *testing.T) {
 		t.Fatal("Validate() accepted an empty model")
 	}
 }
+
+func TestTrainTexts(t *testing.T) {
+	trained := TrainTexts([]string{"school operations", "", "teacher management"})
+	if len(trained.Candidates) != 2 {
+		t.Fatalf("got %d candidates, want 2", len(trained.Candidates))
+	}
+}

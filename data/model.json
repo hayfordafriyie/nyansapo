@@ -1,54 +1,57 @@
 {
   "candidates": [
     {
-      "text": "EDSPiKE is a school management and learning platform.",
+      "text": "domain",
       "vector": {
-        "and": 1,
-        "edspike": 1,
-        "learning": 1,
-        "management": 1,
-        "platform": 1,
+        "domain": 1
+      }
+    },
+    {
+      "text": "school operations",
+      "vector": {
+        "operations": 1,
         "school": 1
       }
     },
     {
-      "text": "Student management",
+      "text": "topics",
       "vector": {
-        "management": 1,
-        "student": 1
+        "topics": 1
       }
     },
     {
-      "text": "Teacher management",
+      "text": "enrollment",
       "vector": {
-        "management": 1,
+        "enrollment": 1
+      }
+    },
+    {
+      "text": "Student enrollment workflows",
+      "vector": {
+        "enrollment": 1,
+        "student": 1,
+        "workflows": 1
+      }
+    },
+    {
+      "text": "name role",
+      "vector": {
+        "name": 1,
+        "role": 1
+      }
+    },
+    {
+      "text": "Ama teacher",
+      "vector": {
+        "ama": 1,
         "teacher": 1
-      }
-    },
-    {
-      "text": "School management",
-      "vector": {
-        "management": 1,
-        "school": 1
-      }
-    },
-    {
-      "text": "Learning management",
-      "vector": {
-        "learning": 1,
-        "management": 1
       }
     }
   ],
   "knowledge": {
-    "name": "EDSPiKE",
-    "country": "Ghana",
-    "description": "EDSPiKE is a school management and learning platform.",
-    "features": [
-      "Student management",
-      "Teacher management",
-      "School management",
-      "Learning management"
-    ]
+    "name": "",
+    "country": "",
+    "description": "",
+    "features": null
   }
 }

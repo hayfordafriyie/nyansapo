@@ -19,16 +19,24 @@ type TrainedModel struct {
 	Knowledge  Knowledge          `json:"knowledge"`
 }
 
-func Train(knowledge Knowledge) TrainedModel {
-	texts := append([]string{knowledge.Description}, knowledge.Features...)
+func TrainTexts(texts []string) TrainedModel {
 	candidates := make([]trainedCandidate, 0, len(texts))
 	for _, text := range texts {
+		if strings.TrimSpace(text) == "" {
+			continue
+		}
 		candidates = append(candidates, trainedCandidate{
 			Text:   text,
 			Vector: embedding.Embed(text),
 		})
 	}
-	return TrainedModel{Candidates: candidates, Knowledge: knowledge}
+	return TrainedModel{Candidates: candidates}
+}
+
+func Train(knowledge Knowledge) TrainedModel {
+	model := TrainTexts(append([]string{knowledge.Description}, knowledge.Features...))
+	model.Knowledge = knowledge
+	return model
 }
 
 func (m TrainedModel) Save(path string) error {
@@ -58,9 +66,6 @@ func LoadTrained(path string) (TrainedModel, error) {
 }
 
 func (m TrainedModel) Validate() error {
-	if strings.TrimSpace(m.Knowledge.Name) == "" {
-		return fmt.Errorf("knowledge name is required")
-	}
 	if len(m.Candidates) == 0 {
 		return fmt.Errorf("at least one candidate is required")
 	}
