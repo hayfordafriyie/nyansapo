@@ -23,23 +23,23 @@ func Format(question, passage string) string {
 	switch {
 	case strings.Contains(strings.ToLower(question), "why"):
 		templates := []string{
-			"The reason is that %s",
-			"This matters because %s",
-			"That is important because %s",
+			"The reason is that %s Together, these details explain why the process matters.",
+			"This matters because %s Taken together, the evidence shows the role of the process.",
+			"That is important because %s These facts connect the process to its result.",
 		}
 		return strings.Replace(templates[style], "%s", body, 1)
 	case strings.Contains(strings.ToLower(question), "how"):
 		templates := []string{
-			"The process works like this: %s",
-			"Plants do this through a process where %s",
-			"Step by step, the key idea is that %s",
+			"The process works like this: %s The first sentence gives the action, and the next gives supporting context.",
+			"Plants do this through a process where %s The evidence describes both the action and its support.",
+			"Step by step, the key idea is that %s These related facts show how the process works.",
 		}
 		return strings.Replace(templates[style], "%s", body, 1)
 	case strings.Contains(strings.ToLower(question), "what"):
 		templates := []string{
-			"In simple terms, %s",
-			"Put simply, %s",
-			"At its core, %s",
+			"In simple terms, %s The second sentence adds context to the definition.",
+			"Put simply, %s The supporting detail helps explain the main idea.",
+			"At its core, %s The related evidence gives a fuller picture.",
 		}
 		return strings.Replace(templates[style], "%s", body, 1)
 	default:
