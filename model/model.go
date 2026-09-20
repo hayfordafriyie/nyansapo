@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	"mini-llm/embedding"
 	"mini-llm/tokenizer"
 )
 
@@ -50,19 +51,20 @@ func (k Knowledge) Answer(question string) string {
 func (k Knowledge) Search(query []string) string {
 	type candidate struct {
 		text  string
-		score int
+		score float64
 	}
 
+	queryVector := embedding.Embed(strings.Join(query, " "))
 	candidates := make([]candidate, 0, len(k.Features)+1)
 	for _, feature := range k.Features {
 		candidates = append(candidates, candidate{
 			text:  feature,
-			score: sharedTokenCount(query, tokenizer.Tokenize(feature)),
+			score: embedding.Cosine(queryVector, embedding.Embed(feature)),
 		})
 	}
 	candidates = append(candidates, candidate{
 		text:  k.Description,
-		score: sharedTokenCount(query, tokenizer.Tokenize(k.Description)),
+		score: embedding.Cosine(queryVector, embedding.Embed(k.Description)),
 	})
 
 	best := candidate{}
@@ -76,17 +78,4 @@ func (k Knowledge) Search(query []string) string {
 	}
 
 	return "I do not know that yet."
-}
-
-func sharedTokenCount(left, right []string) int {
-	count := 0
-	for _, leftToken := range left {
-		for _, rightToken := range right {
-			if leftToken == rightToken && len(leftToken) > 2 {
-				count++
-				break
-			}
-		}
-	}
-	return count
 }
