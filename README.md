@@ -31,6 +31,12 @@ Send a question with `POST /ask`:
 curl -X POST http://localhost:8080/ask -H "Content-Type: application/json" -d "{\"question\":\"What is EDSPiKE?\"}"
 ```
 
+Check API health with `GET /health`:
+
+```text
+curl http://localhost:8080/health
+```
+
 Ask one question without the interactive prompt:
 
 ```text

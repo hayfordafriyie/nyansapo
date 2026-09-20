@@ -37,3 +37,18 @@ func TestAskRejectsMissingQuestion(t *testing.T) {
 		t.Fatalf("status = %d, want %d", response.Code, http.StatusBadRequest)
 	}
 }
+
+func TestHealth(t *testing.T) {
+	server := NewServer(model.Knowledge{})
+	request := httptest.NewRequest(http.MethodGet, "/health", nil)
+	response := httptest.NewRecorder()
+
+	server.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", response.Code, http.StatusOK)
+	}
+	if response.Body.String() != `{"status":"ok"}` {
+		t.Fatalf("response = %q, want health response", response.Body.String())
+	}
+}
