@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"mini-llm/evaluation"
 	"mini-llm/model"
 	"mini-llm/pipeline"
 )
@@ -52,6 +53,12 @@ func main() {
 		panic(err)
 	}
 	answer := trained.Answer
+
+	if len(os.Args) > 1 && strings.EqualFold(os.Args[1], "evaluate") {
+		result := evaluation.Run(trained, 10)
+		fmt.Printf("queries: %d\nunknown: %d\nempty: %d\nunique answers: %d\n", result.Total, result.Unknown, result.Empty, result.Unique)
+		return
+	}
 
 	if len(os.Args) > 2 && strings.EqualFold(os.Args[1], "ask-trained") {
 		fmt.Println(trained.Answer(strings.Join(os.Args[2:], " ")))

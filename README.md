@@ -174,6 +174,16 @@ go run . train path\to\my-data
 To add a new format such as Parquet, register a reader in `pipeline/pipeline.go`;
 the model and API layers do not need to change.
 
+Run a single-process 200-query evaluation:
+
+```text
+go run . evaluate
+```
+
+This runs 20 varied subject questions 10 times (200 total), reporting unknown
+answers, empty answers, and unique response count. It measures the current
+retrieval/response system; repeated evaluation does not retrain neural weights.
+
 ## Evidence-based answers
 
 The retrieval model first finds the most relevant trained passage. The response
