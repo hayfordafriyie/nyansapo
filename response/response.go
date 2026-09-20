@@ -1,6 +1,7 @@
 package response
 
 import (
+	"crypto/rand"
 	"strings"
 
 	"mini-llm/tokenizer"
@@ -18,16 +19,45 @@ func Format(question, passage string) string {
 		return strings.TrimRight(body, ".!?")
 	}
 
+	style := randomStyle(3)
 	switch {
 	case strings.Contains(strings.ToLower(question), "why"):
-		return "The reason is that " + body
+		templates := []string{
+			"The reason is that %s",
+			"This matters because %s",
+			"That is important because %s",
+		}
+		return strings.Replace(templates[style], "%s", body, 1)
 	case strings.Contains(strings.ToLower(question), "how"):
-		return "The process works like this: " + body
+		templates := []string{
+			"The process works like this: %s",
+			"Plants do this through a process where %s",
+			"Step by step, the key idea is that %s",
+		}
+		return strings.Replace(templates[style], "%s", body, 1)
 	case strings.Contains(strings.ToLower(question), "what"):
-		return "In simple terms, " + body
+		templates := []string{
+			"In simple terms, %s",
+			"Put simply, %s",
+			"At its core, %s",
+		}
+		return strings.Replace(templates[style], "%s", body, 1)
 	default:
-		return "The key idea is: " + body
+		templates := []string{
+			"The key idea is: %s",
+			"One useful way to see it is: %s",
+			"In short, %s",
+		}
+		return strings.Replace(templates[style], "%s", body, 1)
 	}
+}
+
+func randomStyle(count int) int {
+	var value [1]byte
+	if _, err := rand.Read(value[:]); err == nil {
+		return int(value[0]) % count
+	}
+	return 0
 }
 
 func splitSentences(text string) []string {
