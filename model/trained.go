@@ -15,6 +15,7 @@ type trainedCandidate struct {
 
 type TrainedModel struct {
 	Candidates []trainedCandidate `json:"candidates"`
+	Knowledge  Knowledge          `json:"knowledge"`
 }
 
 func Train(knowledge Knowledge) TrainedModel {
@@ -26,7 +27,7 @@ func Train(knowledge Knowledge) TrainedModel {
 			Vector: embedding.Embed(text),
 		})
 	}
-	return TrainedModel{Candidates: candidates}
+	return TrainedModel{Candidates: candidates, Knowledge: knowledge}
 }
 
 func (m TrainedModel) Save(path string) error {
@@ -53,6 +54,10 @@ func LoadTrained(path string) (TrainedModel, error) {
 }
 
 func (m TrainedModel) Answer(question string) string {
+	if answer := m.Knowledge.Answer(question); answer != "I do not know that yet." {
+		return answer
+	}
+
 	query := embedding.Embed(question)
 	var best string
 	var bestScore float64

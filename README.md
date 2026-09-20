@@ -25,6 +25,9 @@ Start the JSON API:
 go run . serve
 ```
 
+The API loads `data/model.json`, so run `go run . train` once before starting
+the server.
+
 Send a question with `POST /ask`:
 
 ```text

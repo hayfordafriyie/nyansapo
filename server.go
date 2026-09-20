@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -9,11 +10,11 @@ import (
 )
 
 func runServer() error {
-	knowledge, err := model.LoadKnowledge("data/knowledge.json")
+	trained, err := model.LoadTrained("data/model.json")
 	if err != nil {
-		return err
+		return fmt.Errorf("load trained model; run `go run . train` first: %w", err)
 	}
 
 	log.Println("API listening on http://localhost:8080")
-	return http.ListenAndServe(":8080", api.NewServer(knowledge))
+	return http.ListenAndServe(":8080", api.NewTrainedServer(trained))
 }

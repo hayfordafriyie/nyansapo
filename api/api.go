@@ -9,11 +9,15 @@ import (
 )
 
 type Server struct {
-	knowledge model.Knowledge
+	answer func(string) string
 }
 
 func NewServer(knowledge model.Knowledge) *Server {
-	return &Server{knowledge: knowledge}
+	return &Server{answer: knowledge.Answer}
+}
+
+func NewTrainedServer(trained model.TrainedModel) *Server {
+	return &Server{answer: trained.Answer}
 }
 
 type questionRequest struct {
@@ -55,6 +59,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(answerResponse{
-		Answer: s.knowledge.Answer(request.Question),
+		Answer: s.answer(request.Question),
 	})
 }

@@ -7,6 +7,8 @@ import (
 
 func TestTrainSaveLoadAndAnswer(t *testing.T) {
 	knowledge := Knowledge{
+		Name:        "EDSPiKE",
+		Country:     "Ghana",
 		Description: "A platform.",
 		Features:    []string{"School management", "Learning management"},
 	}
@@ -22,5 +24,8 @@ func TestTrainSaveLoadAndAnswer(t *testing.T) {
 	}
 	if got := loaded.Answer("school management"); got != "School management" {
 		t.Fatalf("Answer() = %q, want %q", got, "School management")
+	}
+	if got := loaded.Answer("What country?"); got != "Ghana" {
+		t.Fatalf("Answer() = %q, want %q", got, "Ghana")
 	}
 }

@@ -39,5 +39,16 @@
         "management": 1
       }
     }
-  ]
+  ],
+  "knowledge": {
+    "name": "EDSPiKE",
+    "country": "Ghana",
+    "description": "EDSPiKE is a school management and learning platform.",
+    "features": [
+      "Student management",
+      "Teacher management",
+      "School management",
+      "Learning management"
+    ]
+  }
 }
