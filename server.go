@@ -6,15 +6,14 @@ import (
 	"net/http"
 
 	"mini-llm/api"
-	"mini-llm/model"
 )
 
 func runServer() error {
-	trained, err := model.LoadTrained("data/model.json")
+	server, err := api.NewReloadingServer("data/model.json")
 	if err != nil {
 		return fmt.Errorf("load trained model; run `go run . train` first: %w", err)
 	}
 
 	log.Println("API listening on http://localhost:8080")
-	return http.ListenAndServe(":8080", api.NewTrainedServer(trained))
+	return http.ListenAndServe(":8080", server)
 }

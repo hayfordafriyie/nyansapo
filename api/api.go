@@ -11,7 +11,8 @@ import (
 )
 
 type Server struct {
-	answer func(string) string
+	answer      func(string) string
+	trainedPath string
 }
 
 func NewServer(knowledge model.Knowledge) *Server {
@@ -20,6 +21,14 @@ func NewServer(knowledge model.Knowledge) *Server {
 
 func NewTrainedServer(trained model.TrainedModel) *Server {
 	return &Server{answer: trained.Answer}
+}
+
+func NewReloadingServer(path string) (*Server, error) {
+	trained, err := model.LoadTrained(path)
+	if err != nil {
+		return nil, err
+	}
+	return &Server{answer: trained.Answer, trainedPath: path}, nil
 }
 
 type questionRequest struct {
@@ -79,9 +88,19 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	answer := s.answer
+	if s.trainedPath != "" {
+		trained, err := model.LoadTrained(s.trainedPath)
+		if err != nil {
+			http.Error(w, "trained model unavailable", http.StatusServiceUnavailable)
+			return
+		}
+		answer = trained.Answer
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(answerResponse{
-		Answer: s.answer(request.Question),
+		Answer: answer(request.Question),
 	}); err != nil {
 		http.Error(w, "failed to encode response", http.StatusInternalServerError)
 	}

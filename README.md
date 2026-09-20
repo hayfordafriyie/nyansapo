@@ -71,9 +71,9 @@ For automatic retraining whenever supported files are added or changed, run:
 go run . watch data/input
 ```
 
-The watcher rebuilds `data/model.json` when it detects a file change. Keep the
-API running separately; restart it after retraining or add a reload endpoint
-when moving to a multi-process deployment.
+The watcher rebuilds `data/model.json` when it detects a file change. The API
+reloads and validates that artifact for each question, so new data becomes
+available without restarting the server.
 
 Ask the persisted model directly:
 

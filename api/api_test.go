@@ -106,3 +106,27 @@ func TestChatPage(t *testing.T) {
 		t.Fatalf("response does not contain chat page title")
 	}
 }
+
+func TestReloadingServer(t *testing.T) {
+	path := t.TempDir() + "/model.json"
+	trained := model.Train(model.Knowledge{
+		Name:        "EDSPiKE",
+		Country:     "Ghana",
+		Description: "A platform.",
+	})
+	if err := trained.Save(path); err != nil {
+		t.Fatal(err)
+	}
+	server, err := NewReloadingServer(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := httptest.NewRequest(http.MethodPost, "/ask", strings.NewReader(`{"question":"What country?"}`))
+	response := httptest.NewRecorder()
+
+	server.ServeHTTP(response, request)
+
+	if response.Code != http.StatusOK || !strings.Contains(response.Body.String(), "Ghana") {
+		t.Fatalf("status = %d, response = %q", response.Code, response.Body.String())
+	}
+}
