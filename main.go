@@ -22,6 +22,11 @@ func main() {
 		panic(err)
 	}
 
+	if len(os.Args) > 2 && strings.EqualFold(os.Args[1], "ask") {
+		fmt.Println(knowledge.Answer(strings.Join(os.Args[2:], " ")))
+		return
+	}
+
 	fmt.Println("Ask about EDSPiKE (type \"exit\" to quit).")
 
 	scanner := bufio.NewScanner(os.Stdin)
