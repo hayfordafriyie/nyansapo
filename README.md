@@ -191,8 +191,7 @@ How do plants make food?
   energy into chemical energy. Chlorophyll helps plants absorb light.
 ```
 
-The same question produces the same answer, while differently intended
-questions can use different explanatory connectors. Answers remain grounded in
-your documents. This is evidence-based retrieval and composition, not yet a
-fully generative Transformer; adding one later would require a language model
-trained for text generation.
+Repeated questions can use different explanatory connectors, while the
+supporting facts remain grounded in your documents. This is evidence-based
+retrieval and composition, not yet a fully generative Transformer; adding one
+later would require a language model trained for text generation.
