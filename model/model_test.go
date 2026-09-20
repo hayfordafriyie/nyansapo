@@ -21,4 +21,8 @@ func TestLoadKnowledgeAndAnswer(t *testing.T) {
 	if got := knowledge.Answer("What is EDSPiKE?"); got != "A platform." {
 		t.Fatalf("Answer() = %q, want %q", got, "A platform.")
 	}
+
+	if got := knowledge.Answer("Tell me about learning"); got != "Learning" {
+		t.Fatalf("Answer() = %q, want %q", got, "Learning")
+	}
 }

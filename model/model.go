@@ -31,7 +31,8 @@ func LoadKnowledge(path string) (Knowledge, error) {
 }
 
 func (k Knowledge) Answer(question string) string {
-	normalized := strings.Join(tokenizer.Tokenize(question), " ")
+	tokens := tokenizer.Tokenize(question)
+	normalized := strings.Join(tokens, " ")
 	switch {
 	case strings.Contains(normalized, "what is") && strings.Contains(normalized, "edspike"):
 		return k.Description
@@ -42,6 +43,31 @@ func (k Knowledge) Answer(question string) string {
 	case strings.Contains(normalized, "name"):
 		return k.Name
 	default:
-		return "I do not know that yet."
+		return k.Search(tokens)
 	}
+}
+
+func (k Knowledge) Search(query []string) string {
+	for _, feature := range k.Features {
+		if hasSharedToken(query, tokenizer.Tokenize(feature)) {
+			return feature
+		}
+	}
+
+	if hasSharedToken(query, tokenizer.Tokenize(k.Description)) {
+		return k.Description
+	}
+
+	return "I do not know that yet."
+}
+
+func hasSharedToken(left, right []string) bool {
+	for _, leftToken := range left {
+		for _, rightToken := range right {
+			if leftToken == rightToken && len(leftToken) > 2 {
+				return true
+			}
+		}
+	}
+	return false
 }
